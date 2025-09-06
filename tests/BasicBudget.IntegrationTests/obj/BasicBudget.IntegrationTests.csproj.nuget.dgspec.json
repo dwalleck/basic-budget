@@ -46,16 +46,16 @@
           "dependencies": {
             "Aspire.Dashboard.Sdk.linux-x64": {
               "target": "Package",
-              "version": "[9.4.1, )",
+              "version": "[9.4.2, )",
               "autoReferenced": true
             },
             "Aspire.Hosting.AppHost": {
               "target": "Package",
-              "version": "[9.4.1, )"
+              "version": "[9.4.2, )"
             },
             "Aspire.Hosting.Orchestration.linux-x64": {
               "target": "Package",
-              "version": "[9.4.1, )",
+              "version": "[9.4.2, )",
               "autoReferenced": true
             }
           },
@@ -398,11 +398,11 @@
           "dependencies": {
             "Aspire.Hosting.Testing": {
               "target": "Package",
-              "version": "[9.0.0, )"
+              "version": "[9.4.2, )"
             },
             "Microsoft.AspNetCore.Mvc.Testing": {
               "target": "Package",
-              "version": "[10.0.0-preview.6.24327.7, )"
+              "version": "[10.0.0-preview.7.25380.108, )"
             },
             "Respawn": {
               "target": "Package",
@@ -410,23 +410,23 @@
             },
             "TUnit": {
               "target": "Package",
-              "version": "[0.3.57, )"
+              "version": "[0.57.24, )"
             },
             "TUnit.Analyzers": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[0.3.57, )"
+              "version": "[0.1.984, )"
             },
             "TUnit.Assertions": {
               "target": "Package",
-              "version": "[0.3.57, )"
+              "version": "[0.57.24, )"
             },
             "TUnit.Engine.SourceGenerator": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[0.3.57, )"
+              "version": "[0.1.984, )"
             }
           },
           "imports": [

@@ -2,7 +2,7 @@
   "version": 3,
   "targets": {
     "net10.0": {
-      "Aspire.Dashboard.Sdk.linux-x64/9.4.1": {
+      "Aspire.Dashboard.Sdk.linux-x64/9.4.2": {
         "type": "package",
         "build": {
           "buildTransitive/Aspire.Dashboard.Sdk.linux-x64.props": {},
@@ -13,7 +13,7 @@
           "buildMultiTargeting/Aspire.Dashboard.Sdk.linux-x64.targets": {}
         }
       },
-      "Aspire.Hosting/9.4.1": {
+      "Aspire.Hosting/9.4.2": {
         "type": "package",
         "dependencies": {
           "AspNetCore.HealthChecks.Uris": "9.0.0",
@@ -92,11 +92,11 @@
           }
         }
       },
-      "Aspire.Hosting.AppHost/9.4.1": {
+      "Aspire.Hosting.AppHost/9.4.2": {
         "type": "package",
         "dependencies": {
           "AspNetCore.HealthChecks.Uris": "9.0.0",
-          "Aspire.Hosting": "9.4.1",
+          "Aspire.Hosting": "9.4.2",
           "Google.Protobuf": "3.31.1",
           "Grpc.AspNetCore": "2.71.0",
           "Grpc.Net.ClientFactory": "2.71.0",
@@ -139,7 +139,7 @@
           "buildMultiTargeting/Aspire.Hosting.AppHost.targets": {}
         }
       },
-      "Aspire.Hosting.Orchestration.linux-x64/9.4.1": {
+      "Aspire.Hosting.Orchestration.linux-x64/9.4.2": {
         "type": "package",
         "build": {
           "buildTransitive/Aspire.Hosting.Orchestration.linux-x64.targets": {}
@@ -1353,10 +1353,10 @@
     }
   },
   "libraries": {
-    "Aspire.Dashboard.Sdk.linux-x64/9.4.1": {
-      "sha512": "N1OTD6hZe6kM6m3JsDB/FuSMfH3ZRs1fT/w1cjD186qX7KLK/qN7Q4ManwwbNNeEz2tbd08uZTDQZ2DpNe25QA==",
+    "Aspire.Dashboard.Sdk.linux-x64/9.4.2": {
+      "sha512": "oPAP21tRJ1Fyb4DvBQu7YHUbz1AZpU14mGCQLfhvt4BPwoJ1JaXCKtvVcad5lEz1gJeYvnzYeVZaDcohkIl2iQ==",
       "type": "package",
-      "path": "aspire.dashboard.sdk.linux-x64/9.4.1",
+      "path": "aspire.dashboard.sdk.linux-x64/9.4.2",
       "hasTools": true,
       "files": [
         ".nupkg.metadata",
@@ -1364,7 +1364,7 @@
         "EULA.md",
         "Icon.png",
         "THIRD-PARTY-NOTICES.TXT",
-        "aspire.dashboard.sdk.linux-x64.9.4.1.nupkg.sha512",
+        "aspire.dashboard.sdk.linux-x64.9.4.2.nupkg.sha512",
         "aspire.dashboard.sdk.linux-x64.nuspec",
         "build/Aspire.Dashboard.Sdk.linux-x64.props",
         "build/Aspire.Dashboard.Sdk.linux-x64.targets",
@@ -1393,7 +1393,6 @@
         "tools/Microsoft.Extensions.AI.Abstractions.dll",
         "tools/Microsoft.Extensions.AI.OpenAI.dll",
         "tools/Microsoft.Extensions.AI.dll",
-        "tools/Microsoft.Extensions.FileProviders.Embedded.dll",
         "tools/Microsoft.FluentUI.AspNetCore.Components.Icons.Color.dll",
         "tools/Microsoft.FluentUI.AspNetCore.Components.Icons.Filled.dll",
         "tools/Microsoft.FluentUI.AspNetCore.Components.Icons.Light.dll",
@@ -1468,6 +1467,7 @@
         "tools/wwwroot/css/app.css",
         "tools/wwwroot/css/highlight.css",
         "tools/wwwroot/favicon.ico",
+        "tools/wwwroot/framework/blazor.web.js",
         "tools/wwwroot/img/TokenExample.png",
         "tools/wwwroot/js/app-metrics.js",
         "tools/wwwroot/js/app-reconnect.js",
@@ -1481,17 +1481,17 @@
         "tools/zh-Hant/Aspire.Dashboard.resources.dll"
       ]
     },
-    "Aspire.Hosting/9.4.1": {
-      "sha512": "ygCFRMlU1VqMIXvlSP2qrOOw67Jk+103x+JqxxhceGwIzGI2SPeRnrlcwF4VvDqPrH98qpT4qNh4c7Whe8WaJg==",
+    "Aspire.Hosting/9.4.2": {
+      "sha512": "waVBNcgPYbu4PHfzLn5HQPCdxx3hiH7jDrKCgtBb7Ih6BN/W/vkidcntNC9eL2ictCDWAwLnpi9FUyQN8N16mw==",
       "type": "package",
-      "path": "aspire.hosting/9.4.1",
+      "path": "aspire.hosting/9.4.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Icon.png",
         "README.md",
         "THIRD-PARTY-NOTICES.TXT",
-        "aspire.hosting.9.4.1.nupkg.sha512",
+        "aspire.hosting.9.4.2.nupkg.sha512",
         "aspire.hosting.nuspec",
         "lib/net8.0/Aspire.Hosting.dll",
         "lib/net8.0/Aspire.Hosting.xml",
@@ -1510,10 +1510,10 @@
         "lib/net8.0/zh-Hant/Aspire.Hosting.resources.dll"
       ]
     },
-    "Aspire.Hosting.AppHost/9.4.1": {
-      "sha512": "W2oE0qNPKao+PuMHoEZGMD3z7WBurg1Bi22c/pBkmLA74DlQ8juDPJ8q9LPwVInR1xqYRFJOV2KVETPlVvUGNw==",
+    "Aspire.Hosting.AppHost/9.4.2": {
+      "sha512": "tpQYDHq+KYzfpJwh8tWaKFLDSK7gu26TKdDPT5V/ka6r9j2f91XstcEES5lkwiHz5EYfW9GhgcRLjXuDuDlP9A==",
       "type": "package",
-      "path": "aspire.hosting.apphost/9.4.1",
+      "path": "aspire.hosting.apphost/9.4.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -1522,7 +1522,7 @@
         "README.md",
         "THIRD-PARTY-NOTICES.TXT",
         "analyzers/dotnet/cs/Aspire.Hosting.Analyzers.dll",
-        "aspire.hosting.apphost.9.4.1.nupkg.sha512",
+        "aspire.hosting.apphost.9.4.2.nupkg.sha512",
         "aspire.hosting.apphost.nuspec",
         "build/Aspire.Hosting.AppHost.props",
         "build/Aspire.Hosting.AppHost.targets",
@@ -1534,17 +1534,17 @@
         "lib/net9.0/Aspire.Hosting.AppHost.xml"
       ]
     },
-    "Aspire.Hosting.Orchestration.linux-x64/9.4.1": {
-      "sha512": "JyRt+l2wq4qB4zzuwS3fK+HOm7rResLhd6y7J1QFVm5zj84F0T23YWXBuiVXqJnQ7wJAHhCEGVziJwHxAxLGPA==",
+    "Aspire.Hosting.Orchestration.linux-x64/9.4.2": {
+      "sha512": "Jfmbm5GpX6++cpldF99B7hdqeju/Esidlr4UwHqrPpfHuCtPOqlHHU7/Jye8U4Cmlf3WiPZYS/DxPQyJ3aOtHw==",
       "type": "package",
-      "path": "aspire.hosting.orchestration.linux-x64/9.4.1",
+      "path": "aspire.hosting.orchestration.linux-x64/9.4.2",
       "hasTools": true,
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Icon.png",
         "THIRD-PARTY-NOTICES.TXT",
-        "aspire.hosting.orchestration.linux-x64.9.4.1.nupkg.sha512",
+        "aspire.hosting.orchestration.linux-x64.9.4.2.nupkg.sha512",
         "aspire.hosting.orchestration.linux-x64.nuspec",
         "build/Aspire.Hosting.Orchestration.linux-x64.targets",
         "buildMultiTargeting/Aspire.Hosting.Orchestration.linux-x64.targets",
@@ -3262,9 +3262,9 @@
   },
   "projectFileDependencyGroups": {
     "net10.0": [
-      "Aspire.Dashboard.Sdk.linux-x64 >= 9.4.1",
-      "Aspire.Hosting.AppHost >= 9.4.1",
-      "Aspire.Hosting.Orchestration.linux-x64 >= 9.4.1"
+      "Aspire.Dashboard.Sdk.linux-x64 >= 9.4.2",
+      "Aspire.Hosting.AppHost >= 9.4.2",
+      "Aspire.Hosting.Orchestration.linux-x64 >= 9.4.2"
     ]
   },
   "packageFolders": {
@@ -3312,16 +3312,16 @@
         "dependencies": {
           "Aspire.Dashboard.Sdk.linux-x64": {
             "target": "Package",
-            "version": "[9.4.1, )",
+            "version": "[9.4.2, )",
             "autoReferenced": true
           },
           "Aspire.Hosting.AppHost": {
             "target": "Package",
-            "version": "[9.4.1, )"
+            "version": "[9.4.2, )"
           },
           "Aspire.Hosting.Orchestration.linux-x64": {
             "target": "Package",
-            "version": "[9.4.1, )",
+            "version": "[9.4.2, )",
             "autoReferenced": true
           }
         },

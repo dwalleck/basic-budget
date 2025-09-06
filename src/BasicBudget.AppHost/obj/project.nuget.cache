@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "45YC7/pb6Ic=",
+  "dgSpecHash": "/OrP7Nn5wbQ=",
   "success": true,
   "projectFilePath": "/home/dwalleck/repos/basic-budget/src/BasicBudget.AppHost/BasicBudget.AppHost.csproj",
   "expectedPackageFiles": [
-    "/home/dwalleck/.nuget/packages/aspire.dashboard.sdk.linux-x64/9.4.1/aspire.dashboard.sdk.linux-x64.9.4.1.nupkg.sha512",
-    "/home/dwalleck/.nuget/packages/aspire.hosting/9.4.1/aspire.hosting.9.4.1.nupkg.sha512",
-    "/home/dwalleck/.nuget/packages/aspire.hosting.apphost/9.4.1/aspire.hosting.apphost.9.4.1.nupkg.sha512",
-    "/home/dwalleck/.nuget/packages/aspire.hosting.orchestration.linux-x64/9.4.1/aspire.hosting.orchestration.linux-x64.9.4.1.nupkg.sha512",
+    "/home/dwalleck/.nuget/packages/aspire.dashboard.sdk.linux-x64/9.4.2/aspire.dashboard.sdk.linux-x64.9.4.2.nupkg.sha512",
+    "/home/dwalleck/.nuget/packages/aspire.hosting/9.4.2/aspire.hosting.9.4.2.nupkg.sha512",
+    "/home/dwalleck/.nuget/packages/aspire.hosting.apphost/9.4.2/aspire.hosting.apphost.9.4.2.nupkg.sha512",
+    "/home/dwalleck/.nuget/packages/aspire.hosting.orchestration.linux-x64/9.4.2/aspire.hosting.orchestration.linux-x64.9.4.2.nupkg.sha512",
     "/home/dwalleck/.nuget/packages/aspnetcore.healthchecks.uris/9.0.0/aspnetcore.healthchecks.uris.9.0.0.nupkg.sha512",
     "/home/dwalleck/.nuget/packages/fractions/7.3.0/fractions.7.3.0.nupkg.sha512",
     "/home/dwalleck/.nuget/packages/google.protobuf/3.31.1/google.protobuf.3.31.1.nupkg.sha512",

@@ -11,21 +11,21 @@ using System;
 using System.Reflection;
 
 [assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("668682d5-5272-4d83-bd55-4dba82161589")]
-[assembly: System.Reflection.AssemblyMetadata("dcpclipath", ("/home/dwalleck/.nuget/packages/aspire.hosting.orchestration.linux-x64/9.4.1/tools" +
+[assembly: System.Reflection.AssemblyMetadata("dcpclipath", ("/home/dwalleck/.nuget/packages/aspire.hosting.orchestration.linux-x64/9.4.2/tools" +
     "/dcp"))]
-[assembly: System.Reflection.AssemblyMetadata("dcpextensionpaths", ("/home/dwalleck/.nuget/packages/aspire.hosting.orchestration.linux-x64/9.4.1/tools" +
+[assembly: System.Reflection.AssemblyMetadata("dcpextensionpaths", ("/home/dwalleck/.nuget/packages/aspire.hosting.orchestration.linux-x64/9.4.2/tools" +
     "/ext/"))]
-[assembly: System.Reflection.AssemblyMetadata("dcpbinpath", ("/home/dwalleck/.nuget/packages/aspire.hosting.orchestration.linux-x64/9.4.1/tools" +
+[assembly: System.Reflection.AssemblyMetadata("dcpbinpath", ("/home/dwalleck/.nuget/packages/aspire.hosting.orchestration.linux-x64/9.4.2/tools" +
     "/ext/bin/"))]
 [assembly: System.Reflection.AssemblyMetadata("apphostprojectpath", "/home/dwalleck/repos/basic-budget/src/BasicBudget.AppHost")]
 [assembly: System.Reflection.AssemblyMetadata("apphostprojectname", "BasicBudget.AppHost.csproj")]
-[assembly: System.Reflection.AssemblyMetadata("aspiredashboardpath", ("/home/dwalleck/.nuget/packages/aspire.dashboard.sdk.linux-x64/9.4.1/tools/Aspire." +
+[assembly: System.Reflection.AssemblyMetadata("aspiredashboardpath", ("/home/dwalleck/.nuget/packages/aspire.dashboard.sdk.linux-x64/9.4.2/tools/Aspire." +
     "Dashboard"))]
 [assembly: System.Reflection.AssemblyMetadataAttribute("apphostprojectbaseintermediateoutputpath", "/home/dwalleck/repos/basic-budget/src/BasicBudget.AppHost/obj/")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("BasicBudget.AppHost")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+495b83bc692710cb007db3d827738dc058d318c8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0c9dc8cf20f4ca0bf368ded75dd8672432c08df7")]
 [assembly: System.Reflection.AssemblyProductAttribute("BasicBudget.AppHost")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BasicBudget.AppHost")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
