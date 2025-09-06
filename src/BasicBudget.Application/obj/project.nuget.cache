@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "M8fxjs2y+EA=",
+  "success": true,
+  "projectFilePath": "/home/dwalleck/repos/basic-budget/src/BasicBudget.Application/BasicBudget.Application.csproj",
+  "expectedPackageFiles": [
+    "/home/dwalleck/.nuget/packages/mediatr/12.4.0/mediatr.12.4.0.nupkg.sha512",
+    "/home/dwalleck/.nuget/packages/mediatr.contracts/2.0.1/mediatr.contracts.2.0.1.nupkg.sha512",
+    "/home/dwalleck/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/8.0.0/microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
+    "/home/dwalleck/.nuget/packages/oneof/3.0.271/oneof.3.0.271.nupkg.sha512"
+  ],
+  "logs": []
+}
