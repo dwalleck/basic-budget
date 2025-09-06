@@ -1,0 +1,491 @@
+# GraphQL Schema for Basic Budget
+
+type Query {
+  # Account queries
+  accounts: [Account!]!
+  account(id: ID!): Account
+  accountByNumber(accountNumber: String!): Account
+  
+  # Transaction queries with filtering and pagination
+  transactions(
+    accountId: ID
+    categoryId: ID
+    startDate: DateTime
+    endDate: DateTime
+    first: Int
+    after: String
+    where: TransactionFilterInput
+    order: [TransactionSortInput!]
+  ): TransactionConnection!
+  
+  transaction(id: ID!): Transaction
+  
+  # Budget queries
+  budgets: [Budget!]!
+  budget(id: ID!): Budget
+  activeBudgets: [Budget!]!
+  
+  # Category queries
+  categories: [Category!]!
+  category(id: ID!): Category
+  categoryHierarchy: [Category!]!
+  
+  # Periodic summary queries
+  periodicSummary(
+    accountIds: [ID!]
+    startDate: DateTime!
+    endDate: DateTime!
+    summaryType: PeriodicSummaryType!
+  ): PeriodicSummary!
+  
+  monthlySpending(
+    accountIds: [ID!]
+    year: Int!
+    month: Int!
+  ): MonthlySpendingSummary!
+  
+  budgetProgress(budgetId: ID!): BudgetProgressSummary!
+}
+
+type Mutation {
+  # Account mutations
+  createAccount(input: CreateAccountInput!): CreateAccountPayload!
+  updateAccount(input: UpdateAccountInput!): UpdateAccountPayload!
+  
+  # Transaction mutations
+  createTransaction(input: CreateTransactionInput!): CreateTransactionPayload!
+  updateTransaction(input: UpdateTransactionInput!): UpdateTransactionPayload!
+  categorizeTransaction(input: CategorizeTransactionInput!): CategorizeTransactionPayload!
+  
+  # Statement import mutations
+  importStatement(input: ImportStatementInput!): ImportStatementPayload!
+  
+  # Budget mutations
+  createBudget(input: CreateBudgetInput!): CreateBudgetPayload!
+  updateBudget(input: UpdateBudgetInput!): UpdateBudgetPayload!
+  addBudgetCategory(input: AddBudgetCategoryInput!): AddBudgetCategoryPayload!
+  
+  # Category mutations
+  createCategory(input: CreateCategoryInput!): CreateCategoryPayload!
+  updateCategory(input: UpdateCategoryInput!): UpdateCategoryPayload!
+}
+
+type Subscription {
+  # Real-time transaction notifications
+  transactionAdded(accountId: ID): Transaction!
+  
+  # Budget alert subscriptions
+  budgetAlertAdded: BudgetAlert!
+  spendingLimitWarning(categoryId: ID): SpendingLimitWarning!
+  
+  # Monthly progress updates
+  budgetProgressChanged(budgetId: ID!): BudgetProgressSummary!
+}
+
+# Core Types
+
+type Account {
+  id: ID!
+  accountNumber: String!
+  name: String!
+  accountType: AccountType!
+  currentBalance: Money!
+  transactions(
+    first: Int
+    after: String
+    where: TransactionFilterInput
+    order: [TransactionSortInput!]
+  ): TransactionConnection!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Transaction {
+  id: ID!
+  account: Account!
+  amount: Money!
+  transactionDate: DateTime!
+  description: String!
+  category: Category
+  isReconciled: Boolean!
+  importedAt: DateTime
+}
+
+type Budget {
+  id: ID!
+  name: String!
+  budgetType: BudgetType!
+  startDate: DateTime!
+  endDate: DateTime
+  isActive: Boolean!
+  categories: [BudgetCategory!]!
+  accounts: [Account!]!
+  totalAllocated: Money!
+  totalSpent: Money!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Category {
+  id: ID!
+  name: String!
+  parentCategory: Category
+  children: [Category!]!
+  description: String
+  isSystemGenerated: Boolean!
+  color: String
+  transactionCount: Int!
+}
+
+type BudgetCategory {
+  id: ID!
+  budget: Budget!
+  category: Category!
+  allocatedAmount: Money!
+  spentAmount: Money!
+  alertThreshold: Float!
+  remainingAmount: Money!
+  percentageSpent: Float!
+}
+
+# Value Objects
+
+type Money {
+  amount: Decimal!
+  currency: String!
+  formatted: String!
+}
+
+# Enums
+
+enum AccountType {
+  CHECKING
+  SAVINGS
+  CREDIT_CARD
+}
+
+enum BudgetType {
+  BASIC
+  COMPLEX
+}
+
+enum PeriodicSummaryType {
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  YEARLY
+}
+
+# Connection Types (for pagination)
+
+type TransactionConnection {
+  nodes: [Transaction!]!
+  edges: [TransactionEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type TransactionEdge {
+  node: Transaction!
+  cursor: String!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+# Filter and Sort Input Types
+
+input TransactionFilterInput {
+  and: [TransactionFilterInput!]
+  or: [TransactionFilterInput!]
+  accountId: ComparableGuidOperationFilterInput
+  categoryId: ComparableNullableOfGuidOperationFilterInput
+  amount: ComparableDecimalOperationFilterInput
+  transactionDate: ComparableDateTimeOperationFilterInput
+  description: StringOperationFilterInput
+  isReconciled: BooleanOperationFilterInput
+}
+
+input TransactionSortInput {
+  transactionDate: SortEnumType
+  amount: SortEnumType
+  description: SortEnumType
+}
+
+enum SortEnumType {
+  ASC
+  DESC
+}
+
+# Mutation Input Types
+
+input CreateAccountInput {
+  accountNumber: String!
+  name: String!
+  accountType: AccountType!
+  initialBalance: MoneyInput!
+}
+
+input UpdateAccountInput {
+  id: ID!
+  name: String
+  accountType: AccountType
+}
+
+input CreateTransactionInput {
+  accountId: ID!
+  amount: MoneyInput!
+  transactionDate: DateTime!
+  description: String!
+  categoryId: ID
+}
+
+input UpdateTransactionInput {
+  id: ID!
+  amount: MoneyInput
+  transactionDate: DateTime
+  description: String
+  categoryId: ID
+}
+
+input CategorizeTransactionInput {
+  transactionId: ID!
+  categoryId: ID!
+}
+
+input ImportStatementInput {
+  accountId: ID!
+  fileData: Upload!
+  fileFormat: StatementFileFormat!
+}
+
+input CreateBudgetInput {
+  name: String!
+  budgetType: BudgetType!
+  startDate: DateTime!
+  endDate: DateTime
+  accountIds: [ID!]!
+}
+
+input UpdateBudgetInput {
+  id: ID!
+  name: String
+  endDate: DateTime
+  isActive: Boolean
+}
+
+input AddBudgetCategoryInput {
+  budgetId: ID!
+  categoryId: ID!
+  allocatedAmount: MoneyInput!
+  alertThreshold: Float!
+}
+
+input CreateCategoryInput {
+  name: String!
+  parentCategoryId: ID
+  description: String
+  color: String
+}
+
+input UpdateCategoryInput {
+  id: ID!
+  name: String
+  description: String
+  color: String
+}
+
+input MoneyInput {
+  amount: Decimal!
+  currency: String! = "USD"
+}
+
+enum StatementFileFormat {
+  CSV
+  QFX
+  OFX
+}
+
+# Mutation Payload Types
+
+type CreateAccountPayload {
+  account: Account
+  errors: [Error!]!
+}
+
+type UpdateAccountPayload {
+  account: Account
+  errors: [Error!]!
+}
+
+type CreateTransactionPayload {
+  transaction: Transaction
+  errors: [Error!]!
+}
+
+type UpdateTransactionPayload {
+  transaction: Transaction
+  errors: [Error!]!
+}
+
+type CategorizeTransactionPayload {
+  transaction: Transaction
+  errors: [Error!]!
+}
+
+type ImportStatementPayload {
+  importedTransactions: [Transaction!]!
+  duplicateCount: Int!
+  errors: [Error!]!
+}
+
+type CreateBudgetPayload {
+  budget: Budget
+  errors: [Error!]!
+}
+
+type UpdateBudgetPayload {
+  budget: Budget
+  errors: [Error!]!
+}
+
+type AddBudgetCategoryPayload {
+  budgetCategory: BudgetCategory
+  errors: [Error!]!
+}
+
+type CreateCategoryPayload {
+  category: Category
+  errors: [Error!]!
+}
+
+type UpdateCategoryPayload {
+  category: Category
+  errors: [Error!]!
+}
+
+# Summary Types
+
+type PeriodicSummary {
+  period: DateRange!
+  summaryType: PeriodicSummaryType!
+  totalIncome: Money!
+  totalExpenses: Money!
+  netAmount: Money!
+  categoryBreakdown: [CategorySummary!]!
+  accountBreakdown: [AccountSummary!]!
+}
+
+type MonthlySpendingSummary {
+  year: Int!
+  month: Int!
+  totalSpent: Money!
+  budgetComparison: BudgetComparisonSummary
+  topCategories: [CategorySummary!]!
+  dailySpending: [DaySpendingSummary!]!
+}
+
+type BudgetProgressSummary {
+  budget: Budget!
+  overallProgress: Float!
+  categoryProgress: [BudgetCategoryProgress!]!
+  projectedOverage: Money
+  daysRemaining: Int
+}
+
+type CategorySummary {
+  category: Category!
+  totalAmount: Money!
+  transactionCount: Int!
+  averageAmount: Money!
+}
+
+type AccountSummary {
+  account: Account!
+  totalAmount: Money!
+  transactionCount: Int!
+}
+
+type BudgetComparisonSummary {
+  budgeted: Money!
+  actual: Money!
+  variance: Money!
+  variancePercentage: Float!
+}
+
+type BudgetCategoryProgress {
+  budgetCategory: BudgetCategory!
+  progressPercentage: Float!
+  isOverBudget: Boolean!
+  projectedTotal: Money
+}
+
+type DaySpendingSummary {
+  date: DateTime!
+  totalSpent: Money!
+  transactionCount: Int!
+}
+
+type DateRange {
+  startDate: DateTime!
+  endDate: DateTime!
+}
+
+# Subscription Types
+
+type BudgetAlert {
+  id: ID!
+  alertType: BudgetAlertType!
+  budgetId: ID!
+  categoryId: ID
+  message: String!
+  currentAmount: Money!
+  limitAmount: Money!
+  percentageUsed: Float!
+  timestamp: DateTime!
+}
+
+type SpendingLimitWarning {
+  id: ID!
+  categoryId: ID!
+  category: Category!
+  warningType: SpendingWarningType!
+  currentSpending: Money!
+  budgetLimit: Money!
+  percentageUsed: Float!
+  projectedOverage: Money
+  daysRemaining: Int!
+  timestamp: DateTime!
+}
+
+enum BudgetAlertType {
+  BUDGET_EXCEEDED
+  APPROACHING_LIMIT
+  CATEGORY_OVERSPENT
+  MONTHLY_LIMIT_WARNING
+}
+
+enum SpendingWarningType {
+  SEVENTY_FIVE_PERCENT
+  NINETY_PERCENT
+  BUDGET_EXCEEDED
+  PROJECTED_OVERAGE
+}
+
+# Error Handling
+
+type Error {
+  message: String!
+  code: String!
+  path: [String!]!
+}
+
+# Scalar Types
+
+scalar DateTime
+scalar Decimal
+scalar Upload
