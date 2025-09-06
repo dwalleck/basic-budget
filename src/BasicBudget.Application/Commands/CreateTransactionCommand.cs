@@ -1,9 +1,11 @@
-using MediatR;
-using OneOf;
 using BasicBudget.Domain.Entities;
-using BasicBudget.Domain.ValueObjects;
-using BasicBudget.Domain.Repositories;
 using BasicBudget.Domain.Errors;
+using BasicBudget.Domain.Repositories;
+using BasicBudget.Domain.ValueObjects;
+
+using MediatR;
+
+using OneOf;
 
 namespace BasicBudget.Application.Commands;
 
@@ -32,7 +34,7 @@ public class CreateTransactionCommandHandler : IRequestHandler<CreateTransaction
     }
 
     public async Task<OneOf<Transaction, DomainError>> Handle(
-        CreateTransactionCommand request, 
+        CreateTransactionCommand request,
         CancellationToken cancellationToken)
     {
         // Validate account exists
@@ -85,7 +87,7 @@ public class CreateTransactionCommandHandler : IRequestHandler<CreateTransaction
             await _transactionRepository.AddAsync(transaction, cancellationToken);
             await _accountRepository.UpdateAsync(account, cancellationToken);
             await _transactionRepository.SaveChangesAsync(cancellationToken);
-            
+
             return transaction;
         }
         catch (Exception ex)

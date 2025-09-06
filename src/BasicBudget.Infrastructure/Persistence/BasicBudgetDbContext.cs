@@ -1,7 +1,8 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using BasicBudget.Domain.Entities;
 using BasicBudget.Infrastructure.Persistence.Configurations;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace BasicBudget.Infrastructure.Persistence;
 
@@ -65,12 +66,12 @@ public class BasicBudgetDbContext : DbContext
         try
         {
             _logger.LogDebug("Saving changes to database");
-            
+
             // Add audit timestamps for entities that support it
             AddAuditTimestamps();
 
             var result = await base.SaveChangesAsync(cancellationToken);
-            
+
             _logger.LogDebug("Successfully saved {ChangeCount} changes to database", result);
             return result;
         }
@@ -84,7 +85,7 @@ public class BasicBudgetDbContext : DbContext
     private void AddAuditTimestamps()
     {
         var entries = ChangeTracker.Entries()
-            .Where(e => e.Entity is IAuditableEntity && 
+            .Where(e => e.Entity is IAuditableEntity &&
                        (e.State == EntityState.Added || e.State == EntityState.Modified));
 
         foreach (var entry in entries)

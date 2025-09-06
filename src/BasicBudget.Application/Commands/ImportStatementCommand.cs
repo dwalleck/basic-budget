@@ -1,9 +1,11 @@
-using MediatR;
-using OneOf;
 using BasicBudget.Domain.Entities;
-using BasicBudget.Domain.ValueObjects;
-using BasicBudget.Domain.Repositories;
 using BasicBudget.Domain.Errors;
+using BasicBudget.Domain.Repositories;
+using BasicBudget.Domain.ValueObjects;
+
+using MediatR;
+
+using OneOf;
 
 namespace BasicBudget.Application.Commands;
 
@@ -43,7 +45,7 @@ public class ImportStatementCommandHandler : IRequestHandler<ImportStatementComm
     }
 
     public async Task<OneOf<ImportStatementResult, DomainError>> Handle(
-        ImportStatementCommand request, 
+        ImportStatementCommand request,
         CancellationToken cancellationToken)
     {
         // Validate account exists
@@ -55,8 +57,8 @@ public class ImportStatementCommandHandler : IRequestHandler<ImportStatementComm
 
         // Parse the statement file
         var parseResult = await _statementParser.ParseAsync(
-            request.FileFormat, 
-            request.FileContent, 
+            request.FileFormat,
+            request.FileContent,
             cancellationToken
         );
 
@@ -155,8 +157,8 @@ public class ImportStatementCommandHandler : IRequestHandler<ImportStatementComm
 public interface IStatementParser
 {
     Task<OneOf<IReadOnlyList<ParsedTransactionData>, DomainError>> ParseAsync(
-        string format, 
-        string content, 
+        string format,
+        string content,
         CancellationToken cancellationToken
     );
 }

@@ -1,10 +1,13 @@
 using System.ComponentModel;
-using TUnit.Core;
-using TUnit.Assertions;
-using Aspire.Hosting.Testing;
-using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net.Http.Json;
+
 using Aspire.Hosting;
+using Aspire.Hosting.Testing;
+
+using Microsoft.AspNetCore.Mvc.Testing;
+
+using TUnit.Assertions;
+using TUnit.Core;
 
 namespace BasicBudget.GraphQL.Tests;
 
@@ -19,12 +22,12 @@ public class QueryTests
     {
         var appBuilder = DistributedApplication.CreateBuilder();
         _app = appBuilder.Build();
-        
+
         await _app.StartAsync();
-        
+
         var resourceName = "basicbudget-graphql";
         var httpEndpoint = _app.GetEndpoint(resourceName, "https");
-        
+
         _httpClient = new HttpClient();
         _httpClient.BaseAddress = httpEndpoint;
     }
@@ -70,7 +73,7 @@ public class QueryTests
 
         // Assert - This should fail initially as GraphQL endpoint doesn't exist yet
         await Assert.That(response.IsSuccessStatusCode).IsTrue();
-        
+
         var content = await response.Content.ReadAsStringAsync();
         await Assert.That(content).IsNotNull();
         await Assert.That(content).Contains("accounts");
@@ -108,7 +111,7 @@ public class QueryTests
 
         // Assert - This should fail initially as GraphQL endpoint doesn't exist yet
         await Assert.That(response.IsSuccessStatusCode).IsTrue();
-        
+
         var content = await response.Content.ReadAsStringAsync();
         await Assert.That(content).Contains("account");
     }
@@ -151,8 +154,8 @@ public class QueryTests
         var request = new
         {
             query = query,
-            variables = new 
-            { 
+            variables = new
+            {
                 accountId = "acc-123",
                 startDate = "2024-01-01T00:00:00Z",
                 first = 10
@@ -164,7 +167,7 @@ public class QueryTests
 
         // Assert - This should fail initially as GraphQL endpoint doesn't exist yet
         await Assert.That(response.IsSuccessStatusCode).IsTrue();
-        
+
         var content = await response.Content.ReadAsStringAsync();
         await Assert.That(content).Contains("transactions");
         await Assert.That(content).Contains("pageInfo");
@@ -216,7 +219,7 @@ public class QueryTests
 
         // Assert - This should fail initially as GraphQL endpoint doesn't exist yet
         await Assert.That(response.IsSuccessStatusCode).IsTrue();
-        
+
         var content = await response.Content.ReadAsStringAsync();
         await Assert.That(content).Contains("budgets");
     }

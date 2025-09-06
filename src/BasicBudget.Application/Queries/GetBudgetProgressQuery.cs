@@ -1,10 +1,12 @@
-using MediatR;
-using OneOf;
 using BasicBudget.Domain.Entities;
-using BasicBudget.Domain.ValueObjects;
+using BasicBudget.Domain.Errors;
 using BasicBudget.Domain.Repositories;
 using BasicBudget.Domain.Services;
-using BasicBudget.Domain.Errors;
+using BasicBudget.Domain.ValueObjects;
+
+using MediatR;
+
+using OneOf;
 
 namespace BasicBudget.Application.Queries;
 
@@ -63,7 +65,7 @@ public class GetBudgetProgressQueryHandler : IRequestHandler<GetBudgetProgressQu
     }
 
     public async Task<OneOf<BudgetProgressSummary, DomainError>> Handle(
-        GetBudgetProgressQuery request, 
+        GetBudgetProgressQuery request,
         CancellationToken cancellationToken)
     {
         try
@@ -103,13 +105,13 @@ public class GetBudgetProgressQueryHandler : IRequestHandler<GetBudgetProgressQu
 
             foreach (var budgetCategory in budget.BudgetCategories)
             {
-                var spentAmount = spendingByCategory.TryGetValue(budgetCategory.CategoryId, out var spent) 
+                var spentAmount = spendingByCategory.TryGetValue(budgetCategory.CategoryId, out var spent)
                     ? Money.Create(spent, budgetCategory.AllocatedAmount.Currency).AsT0
                     : Money.Zero(budgetCategory.AllocatedAmount.Currency);
 
                 var remainingAmount = budgetCategory.AllocatedAmount - spentAmount;
-                var percentageUsed = budgetCategory.AllocatedAmount.Amount == 0 
-                    ? 0 
+                var percentageUsed = budgetCategory.AllocatedAmount.Amount == 0
+                    ? 0
                     : (spentAmount.Amount / budgetCategory.AllocatedAmount.Amount) * 100;
 
                 // Check for triggered alerts
@@ -164,19 +166,19 @@ public class GetBudgetProgressQueryHandler : IRequestHandler<GetBudgetProgressQu
             ).AsT0;
 
             var totalRemaining = totalAllocated - totalSpent;
-            var overallPercentageUsed = totalAllocated.Amount == 0 
-                ? 0 
+            var overallPercentageUsed = totalAllocated.Amount == 0
+                ? 0
                 : (totalSpent.Amount / totalAllocated.Amount) * 100;
 
             // Calculate projected overage if applicable
             var domainProjectedOverage = await _budgetCalculationService.CalculateProjectedOverageAsync(
-                budget, 
+                budget,
                 transactions.ToList().AsReadOnly(),
                 cancellationToken
             );
 
             // Convert domain ProjectedOverage to application ProjectedOverage
-            var projectedOverage = domainProjectedOverage != null 
+            var projectedOverage = domainProjectedOverage != null
                 ? new ProjectedOverage(
                     domainProjectedOverage.ProjectedOverageAmount,
                     domainProjectedOverage.ProjectedDate,

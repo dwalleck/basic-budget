@@ -1,6 +1,7 @@
+using BasicBudget.Domain.Entities;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using BasicBudget.Domain.Entities;
 
 namespace BasicBudget.Infrastructure.Persistence.Configurations;
 
@@ -11,7 +12,7 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
         builder.ToTable("transactions");
 
         builder.HasKey(t => t.Id);
-        
+
         builder.Property(t => t.Id)
             .HasColumnName("id")
             .ValueGeneratedNever();

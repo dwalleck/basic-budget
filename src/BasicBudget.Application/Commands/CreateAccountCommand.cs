@@ -1,9 +1,11 @@
-using MediatR;
-using OneOf;
 using BasicBudget.Domain.Entities;
-using BasicBudget.Domain.ValueObjects;
-using BasicBudget.Domain.Repositories;
 using BasicBudget.Domain.Errors;
+using BasicBudget.Domain.Repositories;
+using BasicBudget.Domain.ValueObjects;
+
+using MediatR;
+
+using OneOf;
 
 namespace BasicBudget.Application.Commands;
 
@@ -24,7 +26,7 @@ public class CreateAccountCommandHandler : IRequestHandler<CreateAccountCommand,
     }
 
     public async Task<OneOf<Account, DomainError>> Handle(
-        CreateAccountCommand request, 
+        CreateAccountCommand request,
         CancellationToken cancellationToken)
     {
         // Create AccountNumber value object first
@@ -33,9 +35,9 @@ public class CreateAccountCommandHandler : IRequestHandler<CreateAccountCommand,
         {
             return accountNumberResult.AsT1; // Return validation error
         }
-        
+
         var accountNumber = accountNumberResult.AsT0;
-        
+
         // Check if account number already exists
         var existingAccount = await _accountRepository.GetByAccountNumberAsync(accountNumber, cancellationToken);
         if (existingAccount != null)

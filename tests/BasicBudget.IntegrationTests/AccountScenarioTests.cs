@@ -1,13 +1,18 @@
 using System.ComponentModel;
-using TUnit.Core;
-using TUnit.Assertions;
-using Aspire.Hosting.Testing;
-using Aspire.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net.Http.Json;
-using Npgsql;
-using Respawn;
+
+using Aspire.Hosting;
+using Aspire.Hosting.Testing;
+
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+
+using Npgsql;
+
+using Respawn;
+
+using TUnit.Assertions;
+using TUnit.Core;
 
 namespace BasicBudget.IntegrationTests;
 
@@ -16,14 +21,14 @@ public class AccountScenarioTests : TUnit.Core.Interfaces.IAsyncInitializer, IAs
 {
     private DistributedApplication? _app;
     private HttpClient? _httpClient;
-    
+
     public async Task InitializeAsync()
     {
         // TUnit async initialization - runs once per test class
         var appHost = await DistributedApplicationTestingBuilder.CreateAsync<Projects.BasicBudget_AppHost>();
         _app = await appHost.BuildAsync();
         await _app.StartAsync();
-        
+
         _httpClient = _app.CreateHttpClient("basicbudget-graphql");
         // Wait briefly for application to start
         await Task.Delay(2000);
@@ -36,7 +41,7 @@ public class AccountScenarioTests : TUnit.Core.Interfaces.IAsyncInitializer, IAs
         var connectionString = "Host=localhost;Port=5432;Database=basicbudget;Username=postgres;Password=postgres";
         using var connection = new NpgsqlConnection(connectionString);
         await connection.OpenAsync();
-        
+
         var respawn = await Respawner.CreateAsync(connection, new RespawnerOptions
         {
             DbAdapter = DbAdapter.Postgres,
@@ -91,13 +96,13 @@ public class AccountScenarioTests : TUnit.Core.Interfaces.IAsyncInitializer, IAs
 
         // Assert - Verify account creation succeeded
         await Assert.That(response.IsSuccessStatusCode).IsTrue();
-        
+
         var content = await response.Content.ReadAsStringAsync();
         await Assert.That(content).Contains("createAccount");
         await Assert.That(content).Contains("Primary Checking");
         await Assert.That(content).Contains("12345678");
         await Assert.That(content).Contains("1000.00");
-        
+
         // Verify no errors in response
         await Assert.That(content).DoesNotContain("errors");
     }

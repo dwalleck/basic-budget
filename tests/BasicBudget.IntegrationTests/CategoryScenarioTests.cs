@@ -1,14 +1,19 @@
 using System.ComponentModel;
-using TUnit.Core;
-using TUnit.Assertions;
-using Aspire.Hosting.Testing;
-using Aspire.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net.Http.Json;
-using Npgsql;
-using Respawn;
-using TUnit.Core.Interfaces;
+
+using Aspire.Hosting;
+using Aspire.Hosting.Testing;
+
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+
+using Npgsql;
+
+using Respawn;
+
+using TUnit.Assertions;
+using TUnit.Core;
+using TUnit.Core.Interfaces;
 
 namespace BasicBudget.IntegrationTests;
 
@@ -17,14 +22,14 @@ public class CategoryScenarioTests : TUnit.Core.Interfaces.IAsyncInitializer, IA
 {
     private DistributedApplication? _app;
     private HttpClient? _httpClient;
-    
+
     public async Task InitializeAsync()
     {
         // TUnit async initialization - runs once per test class
         var appHost = await DistributedApplicationTestingBuilder.CreateAsync<Projects.BasicBudget_AppHost>();
         _app = await appHost.BuildAsync();
         await _app.StartAsync();
-        
+
         _httpClient = _app.CreateHttpClient("basicbudget-graphql");
         // Wait briefly for application to start
         await Task.Delay(2000);
@@ -37,7 +42,7 @@ public class CategoryScenarioTests : TUnit.Core.Interfaces.IAsyncInitializer, IA
         var connectionString = "Host=localhost;Port=5432;Database=basicbudget;Username=postgres;Password=postgres";
         using var connection = new NpgsqlConnection(connectionString);
         await connection.OpenAsync();
-        
+
         var respawn = await Respawner.CreateAsync(connection, new RespawnerOptions
         {
             DbAdapter = DbAdapter.Postgres,
@@ -90,7 +95,7 @@ public class CategoryScenarioTests : TUnit.Core.Interfaces.IAsyncInitializer, IA
 
         var parentResponse = await _httpClient!.PostAsJsonAsync("/graphql", new { query = createParentCategoryMutation });
         await Assert.That(parentResponse.IsSuccessStatusCode).IsTrue();
-        
+
         // Extract parent category ID from response (this will fail initially)
         var parentContent = await parentResponse.Content.ReadAsStringAsync();
         // For now, use a test ID - this will be fixed when GraphQL is implemented
@@ -134,8 +139,8 @@ public class CategoryScenarioTests : TUnit.Core.Interfaces.IAsyncInitializer, IA
             }
             """;
 
-        var request = new 
-        { 
+        var request = new
+        {
             query = createSubCategoryMutation,
             variables = new { parentId = parentCategoryId }
         };
@@ -145,13 +150,13 @@ public class CategoryScenarioTests : TUnit.Core.Interfaces.IAsyncInitializer, IA
 
         // Assert - Verify category hierarchy creation succeeded
         await Assert.That(response.IsSuccessStatusCode).IsTrue();
-        
+
         var content = await response.Content.ReadAsStringAsync();
         await Assert.That(content).Contains("createCategory");
         await Assert.That(content).Contains("Groceries");
         await Assert.That(content).Contains("Grocery store purchases");
         await Assert.That(content).Contains("Food"); // Parent category name
-        
+
         // Verify no errors in response
         await Assert.That(content).DoesNotContain("errors");
 

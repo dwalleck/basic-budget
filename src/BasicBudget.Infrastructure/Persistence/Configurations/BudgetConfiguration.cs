@@ -1,6 +1,7 @@
+using BasicBudget.Domain.Entities;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using BasicBudget.Domain.Entities;
 
 namespace BasicBudget.Infrastructure.Persistence.Configurations;
 
@@ -11,7 +12,7 @@ public class BudgetConfiguration : IEntityTypeConfiguration<Budget>
         builder.ToTable("budgets");
 
         builder.HasKey(b => b.Id);
-        
+
         builder.Property(b => b.Id)
             .HasColumnName("id")
             .ValueGeneratedNever();

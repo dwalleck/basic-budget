@@ -1,9 +1,11 @@
-using MediatR;
-using OneOf;
 using BasicBudget.Domain.Entities;
-using BasicBudget.Domain.Repositories;
 using BasicBudget.Domain.Errors;
+using BasicBudget.Domain.Repositories;
 using BasicBudget.Domain.ValueObjects;
+
+using MediatR;
+
+using OneOf;
 
 namespace BasicBudget.Application.Queries;
 
@@ -44,7 +46,7 @@ public class GetTransactionsQueryHandler : IRequestHandler<GetTransactionsQuery,
     }
 
     public async Task<OneOf<TransactionPagedResult, DomainError>> Handle(
-        GetTransactionsQuery request, 
+        GetTransactionsQuery request,
         CancellationToken cancellationToken)
     {
         try

@@ -12,11 +12,11 @@ public class BasicBudgetDbContextFactory : IDesignTimeDbContextFactory<BasicBudg
     public BasicBudgetDbContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<BasicBudgetDbContext>();
-        
+
         // Use a default connection string for design-time operations
         // In real applications, this would be read from configuration
         var connectionString = "Host=localhost;Database=basic_budget;Username=postgres;Password=postgres";
-        
+
         optionsBuilder.UseNpgsql(connectionString, options =>
         {
             options.MigrationsAssembly("BasicBudget.Infrastructure");

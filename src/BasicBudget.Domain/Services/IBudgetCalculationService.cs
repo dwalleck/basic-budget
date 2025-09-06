@@ -13,8 +13,8 @@ public interface IBudgetCalculationService
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Projected overage information if overage is likely, null otherwise</returns>
     Task<ProjectedOverage?> CalculateProjectedOverageAsync(
-        Budget budget, 
-        IReadOnlyList<Transaction> transactions, 
+        Budget budget,
+        IReadOnlyList<Transaction> transactions,
         CancellationToken cancellationToken);
 
     /// <summary>

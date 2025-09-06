@@ -1,5 +1,6 @@
-using OneOf;
 using BasicBudget.Domain.Errors;
+
+using OneOf;
 
 namespace BasicBudget.Domain.ValueObjects;
 

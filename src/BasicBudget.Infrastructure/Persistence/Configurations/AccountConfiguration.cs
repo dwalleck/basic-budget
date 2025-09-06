@@ -1,7 +1,8 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using BasicBudget.Domain.Entities;
 using BasicBudget.Domain.ValueObjects;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BasicBudget.Infrastructure.Persistence.Configurations;
 
@@ -12,7 +13,7 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
         builder.ToTable("accounts");
 
         builder.HasKey(a => a.Id);
-        
+
         builder.Property(a => a.Id)
             .HasColumnName("id")
             .ValueGeneratedNever(); // Domain handles ID generation

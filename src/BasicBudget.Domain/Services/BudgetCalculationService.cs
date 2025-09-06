@@ -16,7 +16,7 @@ public class BudgetCalculationService
 
         // Calculate spent amount from transactions within the specified period
         var spentAmount = Money.Zero(budgetCategory.AllocatedAmount.Currency);
-        
+
         foreach (var account in budget.Accounts)
         {
             var relevantTransactions = account.Transactions
@@ -24,37 +24,37 @@ public class BudgetCalculationService
                 .Where(t => t.TransactionDate >= startDate && t.TransactionDate <= endDate)
                 .Where(t => t.Amount.IsNegative) // Only expenses
                 .ToList();
-                
+
             foreach (var transaction in relevantTransactions)
             {
                 spentAmount = spentAmount.Add(transaction.GetAbsoluteAmount());
             }
         }
-        
+
         return spentAmount;
     }
-    
+
     public decimal CalculateBudgetProgress(Budget budget)
     {
         if (budget == null)
             throw new ArgumentNullException(nameof(budget));
-            
+
         var totalAllocated = budget.GetTotalAllocated();
         if (totalAllocated.IsZero)
             return 0m;
-            
+
         var totalSpent = budget.GetTotalSpent();
         return Math.Min(100m, (totalSpent.Amount / totalAllocated.Amount) * 100m);
     }
-    
+
     public BudgetProgressSummary GenerateBudgetProgressSummary(Budget budget)
     {
         if (budget == null)
             throw new ArgumentNullException(nameof(budget));
-            
+
         var overallProgress = CalculateBudgetProgress(budget);
         var categoryProgress = new List<BudgetCategoryProgressItem>();
-        
+
         foreach (var budgetCategory in budget.BudgetCategories)
         {
             var progressItem = new BudgetCategoryProgressItem
@@ -62,17 +62,17 @@ public class BudgetCalculationService
                 BudgetCategory = budgetCategory,
                 ProgressPercentage = budgetCategory.GetPercentageSpent(),
                 IsOverBudget = budgetCategory.IsOverBudget(),
-                ProjectedTotal = budget.EndDate.HasValue 
-                    ? budgetCategory.ProjectEndOfPeriodSpending(budget.EndDate.Value) 
+                ProjectedTotal = budget.EndDate.HasValue
+                    ? budgetCategory.ProjectEndOfPeriodSpending(budget.EndDate.Value)
                     : budgetCategory.SpentAmount
             };
-            
+
             categoryProgress.Add(progressItem);
         }
-        
+
         var projectedOverage = CalculateProjectedOverage(budget);
         var daysRemaining = budget.GetDaysRemaining();
-        
+
         return new BudgetProgressSummary
         {
             Budget = budget,
@@ -82,40 +82,40 @@ public class BudgetCalculationService
             DaysRemaining = daysRemaining
         };
     }
-    
+
     public PeriodicSummary GeneratePeriodicSummary(
-        IEnumerable<Account> accounts, 
-        DateTime startDate, 
-        DateTime endDate, 
+        IEnumerable<Account> accounts,
+        DateTime startDate,
+        DateTime endDate,
         PeriodicSummaryType summaryType)
     {
         if (accounts == null)
             throw new ArgumentNullException(nameof(accounts));
-            
+
         var accountsList = accounts.ToList();
         if (!accountsList.Any())
             throw new ArgumentException("At least one account is required", nameof(accounts));
-            
+
         var currency = accountsList.First().CurrentBalance.Currency;
         var allTransactions = accountsList
             .SelectMany(a => a.Transactions)
             .Where(t => t.TransactionDate >= startDate && t.TransactionDate <= endDate)
             .OrderBy(t => t.TransactionDate)
             .ToList();
-            
+
         var totalIncome = allTransactions
             .Where(t => t.IsIncome)
             .Aggregate(Money.Zero(currency), (sum, t) => sum.Add(t.Amount));
-            
+
         var totalExpenses = allTransactions
             .Where(t => t.IsExpense)
             .Aggregate(Money.Zero(currency), (sum, t) => sum.Add(t.GetAbsoluteAmount()));
-            
+
         var netAmount = totalIncome.Subtract(totalExpenses);
-        
+
         var categoryBreakdown = GenerateCategoryBreakdown(allTransactions, currency);
         var accountBreakdown = GenerateAccountBreakdown(accountsList, startDate, endDate);
-        
+
         return new PeriodicSummary
         {
             Period = new DateRange { StartDate = startDate, EndDate = endDate },
@@ -127,14 +127,14 @@ public class BudgetCalculationService
             AccountBreakdown = accountBreakdown
         };
     }
-    
+
     private Money CalculateProjectedOverage(Budget budget)
     {
         if (!budget.EndDate.HasValue)
             return Money.Zero(budget.GetTotalAllocated().Currency);
-            
+
         var totalProjectedOverage = Money.Zero(budget.GetTotalAllocated().Currency);
-        
+
         foreach (var budgetCategory in budget.BudgetCategories)
         {
             var projectedTotal = budgetCategory.ProjectEndOfPeriodSpending(budget.EndDate.Value);
@@ -144,10 +144,10 @@ public class BudgetCalculationService
                 totalProjectedOverage = totalProjectedOverage.Add(overage);
             }
         }
-        
+
         return totalProjectedOverage;
     }
-    
+
     private List<CategorySummaryItem> GenerateCategoryBreakdown(List<Transaction> transactions, string currency)
     {
         return transactions
@@ -166,7 +166,7 @@ public class BudgetCalculationService
             .OrderByDescending(c => c.TotalAmount.Amount)
             .ToList();
     }
-    
+
     private List<AccountSummaryItem> GenerateAccountBreakdown(List<Account> accounts, DateTime startDate, DateTime endDate)
     {
         return accounts

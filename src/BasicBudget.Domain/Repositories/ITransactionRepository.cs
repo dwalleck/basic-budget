@@ -8,9 +8,9 @@ public interface ITransactionRepository
     Task<Transaction?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<IEnumerable<Transaction>> GetByAccountAsync(Guid accountId, CancellationToken cancellationToken = default);
     Task<IEnumerable<Transaction>> GetByAccountAndDateRangeAsync(
-        Guid accountId, 
-        DateTime startDate, 
-        DateTime endDate, 
+        Guid accountId,
+        DateTime startDate,
+        DateTime endDate,
         CancellationToken cancellationToken = default);
     Task<IEnumerable<Transaction>> GetByCategoryAsync(Guid categoryId, CancellationToken cancellationToken = default);
     Task<IEnumerable<Transaction>> GetUncategorizedAsync(CancellationToken cancellationToken = default);

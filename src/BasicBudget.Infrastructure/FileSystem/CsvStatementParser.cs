@@ -1,9 +1,12 @@
-using Microsoft.Extensions.Logging;
-using OneOf;
 using System.Globalization;
+
 using BasicBudget.Application.Commands;
-using BasicBudget.Domain.ValueObjects;
 using BasicBudget.Domain.Errors;
+using BasicBudget.Domain.ValueObjects;
+
+using Microsoft.Extensions.Logging;
+
+using OneOf;
 
 namespace BasicBudget.Infrastructure.FileSystem;
 
@@ -17,8 +20,8 @@ public class CsvStatementParser : IStatementParser
     }
 
     public async Task<OneOf<IReadOnlyList<ParsedTransactionData>, DomainError>> ParseAsync(
-        string format, 
-        string content, 
+        string format,
+        string content,
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(format))
@@ -53,7 +56,7 @@ public class CsvStatementParser : IStatementParser
     }
 
     private async Task<OneOf<IReadOnlyList<ParsedTransactionData>, DomainError>> ParseCsvAsync(
-        string csvContent, 
+        string csvContent,
         CancellationToken cancellationToken)
     {
         _logger.LogDebug("Parsing CSV statement content");
@@ -111,11 +114,11 @@ public class CsvStatementParser : IStatementParser
     }
 
     private async Task<OneOf<IReadOnlyList<ParsedTransactionData>, DomainError>> ParseQfxAsync(
-        string qfxContent, 
+        string qfxContent,
         CancellationToken cancellationToken)
     {
         _logger.LogDebug("Parsing QFX statement content");
-        
+
         // QFX parsing implementation would go here
         // For now, return not implemented error
         await Task.Delay(1, cancellationToken); // Prevent compiler warning
@@ -123,17 +126,17 @@ public class CsvStatementParser : IStatementParser
     }
 
     private async Task<OneOf<IReadOnlyList<ParsedTransactionData>, DomainError>> ParseOfxAsync(
-        string ofxContent, 
+        string ofxContent,
         CancellationToken cancellationToken)
     {
         _logger.LogDebug("Parsing OFX statement content");
-        
+
         // OFX parsing implementation would go here
         // For now, return not implemented error
         await Task.Delay(1, cancellationToken); // Prevent compiler warning
-        
+
         return new ValidationError(
-            "OFX_NOT_IMPLEMENTED", 
+            "OFX_NOT_IMPLEMENTED",
             "OFX file parsing is not yet implemented"
         );
     }
@@ -151,7 +154,7 @@ public class CsvStatementParser : IStatementParser
 
         // Check for common CSV header patterns
         var hasHeader = IsHeaderLine(fields);
-        
+
         if (hasHeader)
         {
             return new CsvFormat(
@@ -192,9 +195,9 @@ public class CsvStatementParser : IStatementParser
 
     private static bool IsHeaderLine(string[] fields)
     {
-        return fields.Any(field => 
-            field.Contains("date") || 
-            field.Contains("description") || 
+        return fields.Any(field =>
+            field.Contains("date") ||
+            field.Contains("description") ||
             field.Contains("amount") ||
             field.Contains("memo") ||
             field.Contains("reference"));
@@ -214,8 +217,8 @@ public class CsvStatementParser : IStatementParser
     }
 
     private static async Task<OneOf<ParsedTransactionData, DomainError>> ParseCsvLineAsync(
-        string line, 
-        CsvFormat format, 
+        string line,
+        CsvFormat format,
         int lineNumber)
     {
         try
@@ -252,13 +255,13 @@ public class CsvStatementParser : IStatementParser
             var moneyResult = Money.Create(amount, "USD"); if (moneyResult.IsT1) return new ValidationError(moneyResult.AsT1.Message, "INVALID_MONEY"); var money = moneyResult.AsT0;
 
             await Task.Delay(1); // Prevent compiler warning for async method
-            
+
             return new ParsedTransactionData(money, description.Trim(), transactionDate);
         }
         catch (Exception ex)
         {
             return new InfrastructureError(
-                "CSV_LINE_PARSE_ERROR", 
+                "CSV_LINE_PARSE_ERROR",
                 $"Line {lineNumber}: Failed to parse CSV line - {ex.Message}",
                 ex
             );
@@ -271,22 +274,22 @@ public class CsvStatementParser : IStatementParser
         {
             return string.Empty;
         }
-        
+
         var value = fields[index].Trim();
-        
+
         // Remove surrounding quotes if present
         if (value.Length >= 2 && value.StartsWith("\"") && value.EndsWith("\""))
         {
             value = value[1..^1];
         }
-        
+
         return value;
     }
 
     private static bool TryParseDate(string dateText, out DateTime date)
     {
         date = default;
-        
+
         if (string.IsNullOrWhiteSpace(dateText))
         {
             return false;
@@ -296,7 +299,7 @@ public class CsvStatementParser : IStatementParser
         string[] formats = [
             "yyyy-MM-dd",
             "MM/dd/yyyy",
-            "dd/MM/yyyy", 
+            "dd/MM/yyyy",
             "MM-dd-yyyy",
             "dd-MM-yyyy",
             "yyyy/MM/dd",
@@ -319,7 +322,7 @@ public class CsvStatementParser : IStatementParser
     private static bool TryParseAmount(string amountText, out decimal amount)
     {
         amount = 0;
-        
+
         if (string.IsNullOrWhiteSpace(amountText))
         {
             return false;
@@ -334,7 +337,7 @@ public class CsvStatementParser : IStatementParser
             .Replace(" ", "")
             .Replace(",", ""); // Remove thousand separators
 
-        return decimal.TryParse(cleanAmount, NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint, 
+        return decimal.TryParse(cleanAmount, NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint,
             CultureInfo.InvariantCulture, out amount);
     }
 }

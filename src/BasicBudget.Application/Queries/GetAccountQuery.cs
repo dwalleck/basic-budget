@@ -1,8 +1,10 @@
-using MediatR;
-using OneOf;
 using BasicBudget.Domain.Entities;
-using BasicBudget.Domain.Repositories;
 using BasicBudget.Domain.Errors;
+using BasicBudget.Domain.Repositories;
+
+using MediatR;
+
+using OneOf;
 
 namespace BasicBudget.Application.Queries;
 
@@ -18,13 +20,13 @@ public class GetAccountQueryHandler : IRequestHandler<GetAccountQuery, OneOf<Acc
     }
 
     public async Task<OneOf<Account, DomainError>> Handle(
-        GetAccountQuery request, 
+        GetAccountQuery request,
         CancellationToken cancellationToken)
     {
         try
         {
             var account = await _accountRepository.GetByIdAsync(request.AccountId, cancellationToken);
-            
+
             if (account == null)
             {
                 return new AccountNotFoundError(request.AccountId);

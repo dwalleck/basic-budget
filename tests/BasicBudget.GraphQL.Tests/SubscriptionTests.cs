@@ -1,12 +1,15 @@
 using System.ComponentModel;
-using TUnit.Core;
-using TUnit.Assertions;
-using Aspire.Hosting.Testing;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Aspire.Hosting;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
+
+using Aspire.Hosting;
+using Aspire.Hosting.Testing;
+
+using Microsoft.AspNetCore.Mvc.Testing;
+
+using TUnit.Assertions;
+using TUnit.Core;
 
 namespace BasicBudget.GraphQL.Tests;
 
@@ -22,16 +25,16 @@ public class SubscriptionTests
     {
         var appBuilder = DistributedApplication.CreateBuilder();
         _app = appBuilder.Build();
-        
+
         await _app.StartAsync();
-        
+
         var resourceName = "basicbudget-graphql";
         var httpEndpoint = _app.GetEndpoint(resourceName, "https");
-        
+
         // Convert HTTP endpoint to WebSocket endpoint for GraphQL subscriptions
         var wsUri = new UriBuilder(httpEndpoint) { Scheme = "wss", Path = "/graphql" };
         _graphqlWsEndpoint = wsUri.ToString();
-        
+
         _webSocket = new ClientWebSocket();
         _webSocket.Options.AddSubProtocol("graphql-ws");
     }
@@ -47,7 +50,7 @@ public class SubscriptionTests
             }
             _webSocket.Dispose();
         }
-        
+
         if (_app != null)
         {
             await _app.DisposeAsync();
@@ -93,19 +96,19 @@ public class SubscriptionTests
         });
 
         // Act & Assert - This should fail initially as GraphQL WebSocket endpoint doesn't exist yet
-        await Assert.That(async () => 
+        await Assert.That(async () =>
         {
             await _webSocket!.ConnectAsync(new Uri(_graphqlWsEndpoint!), CancellationToken.None);
-            
+
             // Send connection init
             var initMessage = JsonSerializer.Serialize(new { type = "connection_init" });
             var initBytes = Encoding.UTF8.GetBytes(initMessage);
             await _webSocket.SendAsync(new ArraySegment<byte>(initBytes), WebSocketMessageType.Text, true, CancellationToken.None);
-            
+
             // Send subscription
             var subBytes = Encoding.UTF8.GetBytes(subscriptionMessage);
             await _webSocket.SendAsync(new ArraySegment<byte>(subBytes), WebSocketMessageType.Text, true, CancellationToken.None);
-            
+
             return true;
         }).ThrowsNothing();
     }
@@ -144,19 +147,19 @@ public class SubscriptionTests
         });
 
         // Act & Assert - This should fail initially as GraphQL WebSocket endpoint doesn't exist yet
-        await Assert.That(async () => 
+        await Assert.That(async () =>
         {
             await _webSocket!.ConnectAsync(new Uri(_graphqlWsEndpoint!), CancellationToken.None);
-            
+
             // Send connection init
             var initMessage = JsonSerializer.Serialize(new { type = "connection_init" });
             var initBytes = Encoding.UTF8.GetBytes(initMessage);
             await _webSocket.SendAsync(new ArraySegment<byte>(initBytes), WebSocketMessageType.Text, true, CancellationToken.None);
-            
+
             // Send subscription
             var subBytes = Encoding.UTF8.GetBytes(subscriptionMessage);
             await _webSocket.SendAsync(new ArraySegment<byte>(subBytes), WebSocketMessageType.Text, true, CancellationToken.None);
-            
+
             return true;
         }).ThrowsNothing();
     }

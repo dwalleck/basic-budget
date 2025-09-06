@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="TUnit" Version="0.57.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\BasicBudget.Infrastructure\BasicBudget.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\BasicBudget.Application\BasicBudget.Application.csproj" />
+    <ProjectReference Include="..\..\src\BasicBudget.Domain\BasicBudget.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

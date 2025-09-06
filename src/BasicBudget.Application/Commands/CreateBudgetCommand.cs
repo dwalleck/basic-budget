@@ -1,9 +1,11 @@
-using MediatR;
-using OneOf;
 using BasicBudget.Domain.Entities;
-using BasicBudget.Domain.ValueObjects;
-using BasicBudget.Domain.Repositories;
 using BasicBudget.Domain.Errors;
+using BasicBudget.Domain.Repositories;
+using BasicBudget.Domain.ValueObjects;
+
+using MediatR;
+
+using OneOf;
 
 namespace BasicBudget.Application.Commands;
 
@@ -40,7 +42,7 @@ public class CreateBudgetCommandHandler : IRequestHandler<CreateBudgetCommand, O
     }
 
     public async Task<OneOf<Budget, DomainError>> Handle(
-        CreateBudgetCommand request, 
+        CreateBudgetCommand request,
         CancellationToken cancellationToken)
     {
         // Validate date range
@@ -61,8 +63,8 @@ public class CreateBudgetCommandHandler : IRequestHandler<CreateBudgetCommand, O
 
         // Check for overlapping budgets
         var overlappingBudgets = await _budgetRepository.FindOverlappingAsync(
-            request.StartDate, 
-            request.EndDate, 
+            request.StartDate,
+            request.EndDate,
             null, // excludeBudgetId - this is a new budget so no exclusion needed
             cancellationToken
         );
@@ -75,7 +77,7 @@ public class CreateBudgetCommandHandler : IRequestHandler<CreateBudgetCommand, O
         // Validate all categories exist
         var categoryIds = request.CategoryAllocations.Select(ca => ca.CategoryId).ToList();
         var categories = await _categoryRepository.GetByIdsAsync(categoryIds, cancellationToken);
-        
+
         if (categories.Count() != categoryIds.Count)
         {
             var missingIds = categoryIds.Except(categories.Select(c => c.Id)).ToList();
@@ -98,11 +100,11 @@ public class CreateBudgetCommandHandler : IRequestHandler<CreateBudgetCommand, O
         foreach (var allocation in request.CategoryAllocations)
         {
             var category = categories.First(c => c.Id == allocation.CategoryId);
-            
-            var defaultAlertThreshold = allocation.AlertThresholds.Any() 
-                ? allocation.AlertThresholds.First().Percentage / 100m 
+
+            var defaultAlertThreshold = allocation.AlertThresholds.Any()
+                ? allocation.AlertThresholds.First().Percentage / 100m
                 : 0.8m;
-                
+
             var budgetCategory = new BudgetCategory(
                 budget.Id,
                 category.Id,
@@ -131,8 +133,8 @@ public class CreateBudgetCommandHandler : IRequestHandler<CreateBudgetCommand, O
     }
 
     private static OneOf<bool, DomainError> ValidatePeriodAlignment(
-        BudgetType budgetType, 
-        DateTime startDate, 
+        BudgetType budgetType,
+        DateTime startDate,
         DateTime endDate)
     {
         return budgetType switch
@@ -150,7 +152,7 @@ public class CreateBudgetCommandHandler : IRequestHandler<CreateBudgetCommand, O
     private static OneOf<bool, DomainError> ValidateMonthlyPeriod(DateTime startDate, DateTime endDate)
     {
         var expectedEndDate = new DateTime(startDate.Year, startDate.Month, DateTime.DaysInMonth(startDate.Year, startDate.Month));
-        
+
         if (startDate.Day != 1 || endDate.Date != expectedEndDate.Date)
         {
             return new ValidationError(
@@ -165,7 +167,7 @@ public class CreateBudgetCommandHandler : IRequestHandler<CreateBudgetCommand, O
     private static OneOf<bool, DomainError> ValidateYearlyPeriod(DateTime startDate, DateTime endDate)
     {
         var expectedEndDate = new DateTime(startDate.Year, 12, 31);
-        
+
         if (startDate.Month != 1 || startDate.Day != 1 || endDate.Date != expectedEndDate.Date)
         {
             return new ValidationError(

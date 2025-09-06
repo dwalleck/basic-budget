@@ -1,14 +1,19 @@
 using System.ComponentModel;
-using TUnit.Core;
-using TUnit.Assertions;
-using Aspire.Hosting.Testing;
-using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net.Http.Json;
-using Npgsql;
-using Respawn;
+
 using Aspire.Hosting;
-using TUnit.Core.Interfaces;
+using Aspire.Hosting.Testing;
+
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+
+using Npgsql;
+
+using Respawn;
+
+using TUnit.Assertions;
+using TUnit.Core;
+using TUnit.Core.Interfaces;
 
 namespace BasicBudget.IntegrationTests;
 
@@ -17,14 +22,14 @@ public class TransactionScenarioTests : TUnit.Core.Interfaces.IAsyncInitializer,
 {
     private DistributedApplication? _app;
     private HttpClient? _httpClient;
-    
+
     public async Task InitializeAsync()
     {
         // TUnit async initialization - runs once per test class
         var appHost = await DistributedApplicationTestingBuilder.CreateAsync<Projects.BasicBudget_AppHost>();
         _app = await appHost.BuildAsync();
         await _app.StartAsync();
-        
+
         _httpClient = _app.CreateHttpClient("basicbudget-graphql");
         // Wait briefly for application to start
         await Task.Delay(2000);
@@ -37,7 +42,7 @@ public class TransactionScenarioTests : TUnit.Core.Interfaces.IAsyncInitializer,
         var connectionString = "Host=localhost;Port=5432;Database=basicbudget;Username=postgres;Password=postgres";
         using var connection = new NpgsqlConnection(connectionString);
         await connection.OpenAsync();
-        
+
         var respawn = await Respawner.CreateAsync(connection, new RespawnerOptions
         {
             DbAdapter = DbAdapter.Postgres,
@@ -67,7 +72,7 @@ public class TransactionScenarioTests : TUnit.Core.Interfaces.IAsyncInitializer,
 
         var accountResponse = await _httpClient!.PostAsJsonAsync("/graphql", new { query = createAccountMutation });
         await Assert.That(accountResponse.IsSuccessStatusCode).IsTrue();
-        
+
         // Extract account ID from response (this will fail initially)
         var accountContent = await accountResponse.Content.ReadAsStringAsync();
         // For now, use a test ID - this will be fixed when GraphQL is implemented
@@ -112,8 +117,8 @@ public class TransactionScenarioTests : TUnit.Core.Interfaces.IAsyncInitializer,
             }
             """;
 
-        var request = new 
-        { 
+        var request = new
+        {
             query = transactionMutation,
             variables = new { accountId = accountId }
         };
@@ -123,13 +128,13 @@ public class TransactionScenarioTests : TUnit.Core.Interfaces.IAsyncInitializer,
 
         // Assert - Verify transaction creation succeeded and balance updated
         await Assert.That(response.IsSuccessStatusCode).IsTrue();
-        
+
         var content = await response.Content.ReadAsStringAsync();
         await Assert.That(content).Contains("createTransaction");
         await Assert.That(content).Contains("Kroger - Groceries");
         await Assert.That(content).Contains("-85.43");
         await Assert.That(content).Contains("914.57"); // Expected balance after transaction
-        
+
         // Verify no errors in response
         await Assert.That(content).DoesNotContain("errors");
     }

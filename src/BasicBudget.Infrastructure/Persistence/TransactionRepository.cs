@@ -1,8 +1,9 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using BasicBudget.Domain.Entities;
 using BasicBudget.Domain.Repositories;
 using BasicBudget.Domain.ValueObjects;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace BasicBudget.Infrastructure.Persistence;
 
@@ -20,7 +21,7 @@ public class TransactionRepository : ITransactionRepository
     public async Task<Transaction?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         _logger.LogDebug("Retrieving transaction with ID: {TransactionId}", id);
-        
+
         return await _context.Transactions
             .Include(t => t.Account)
             .Include(t => t.Category)
@@ -31,7 +32,7 @@ public class TransactionRepository : ITransactionRepository
     {
         var idList = ids.ToList();
         _logger.LogDebug("Retrieving {Count} transactions by IDs", idList.Count);
-        
+
         return await _context.Transactions
             .Include(t => t.Account)
             .Include(t => t.Category)
@@ -43,7 +44,7 @@ public class TransactionRepository : ITransactionRepository
     public async Task<IEnumerable<Transaction>> GetByAccountAsync(Guid accountId, CancellationToken cancellationToken = default)
     {
         _logger.LogDebug("Retrieving transactions for account: {AccountId}", accountId);
-        
+
         return await _context.Transactions
             .Include(t => t.Account)
             .Include(t => t.Category)
@@ -55,7 +56,7 @@ public class TransactionRepository : ITransactionRepository
     public async Task<IEnumerable<Transaction>> GetByCategoryAsync(Guid categoryId, CancellationToken cancellationToken = default)
     {
         _logger.LogDebug("Retrieving transactions for category: {CategoryId}", categoryId);
-        
+
         return await _context.Transactions
             .Include(t => t.Account)
             .Include(t => t.Category)
@@ -65,12 +66,12 @@ public class TransactionRepository : ITransactionRepository
     }
 
     public async Task<IEnumerable<Transaction>> GetByAccountAndDateRangeAsync(
-        Guid accountId, 
-        DateTime startDate, 
-        DateTime endDate, 
+        Guid accountId,
+        DateTime startDate,
+        DateTime endDate,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogDebug("Retrieving transactions for account {AccountId} from {StartDate} to {EndDate}", 
+        _logger.LogDebug("Retrieving transactions for account {AccountId} from {StartDate} to {EndDate}",
             accountId, startDate, endDate);
 
         return await _context.Transactions
@@ -84,7 +85,7 @@ public class TransactionRepository : ITransactionRepository
     public async Task<IEnumerable<Transaction>> GetUncategorizedAsync(CancellationToken cancellationToken = default)
     {
         _logger.LogDebug("Retrieving uncategorized transactions");
-        
+
         return await _context.Transactions
             .Include(t => t.Account)
             .Include(t => t.Category)
@@ -96,7 +97,7 @@ public class TransactionRepository : ITransactionRepository
     public async Task<IEnumerable<Transaction>> GetUnreconciledAsync(Guid accountId, CancellationToken cancellationToken = default)
     {
         _logger.LogDebug("Retrieving unreconciled transactions for account: {AccountId}", accountId);
-        
+
         return await _context.Transactions
             .Include(t => t.Account)
             .Include(t => t.Category)
@@ -108,7 +109,7 @@ public class TransactionRepository : ITransactionRepository
     public async Task<IEnumerable<Transaction>> GetByDescriptionAsync(string descriptionPattern, CancellationToken cancellationToken = default)
     {
         _logger.LogDebug("Retrieving transactions matching description pattern: {Pattern}", descriptionPattern);
-        
+
         return await _context.Transactions
             .Include(t => t.Account)
             .Include(t => t.Category)
@@ -124,7 +125,7 @@ public class TransactionRepository : ITransactionRepository
         int pageSize,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogDebug("Retrieving paged transactions with filters - Page: {PageNumber}, Size: {PageSize}", 
+        _logger.LogDebug("Retrieving paged transactions with filters - Page: {PageNumber}, Size: {PageSize}",
             pageNumber, pageSize);
 
         var query = _context.Transactions
@@ -139,7 +140,7 @@ public class TransactionRepository : ITransactionRepository
         query = ApplySorting(query, sort);
 
         var totalCount = await query.CountAsync(cancellationToken);
-        
+
         var transactions = await query
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
@@ -155,7 +156,7 @@ public class TransactionRepository : ITransactionRepository
         string description,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogDebug("Checking for duplicate transaction - Account: {AccountId}, Amount: {Amount}, Date: {Date}", 
+        _logger.LogDebug("Checking for duplicate transaction - Account: {AccountId}, Amount: {Amount}, Date: {Date}",
             accountId, amount.Amount, transactionDate);
 
         // Consider transactions within +/- 1 day as potential duplicates
@@ -165,19 +166,19 @@ public class TransactionRepository : ITransactionRepository
         return await _context.Transactions
             .Include(t => t.Account)
             .Include(t => t.Category)
-            .FirstOrDefaultAsync(t => 
+            .FirstOrDefaultAsync(t =>
                 t.AccountId == accountId &&
                 t.Amount.Amount == amount.Amount &&
                 t.Amount.Currency == amount.Currency &&
                 t.Description == description &&
                 t.TransactionDate >= startDate &&
-                t.TransactionDate <= endDate, 
+                t.TransactionDate <= endDate,
                 cancellationToken);
     }
 
     public async Task<IReadOnlyList<Transaction>> GetForDateRangeAsync(
-        DateTime startDate, 
-        DateTime endDate, 
+        DateTime startDate,
+        DateTime endDate,
         Guid? accountId = null,
         Guid? categoryId = null,
         CancellationToken cancellationToken = default)
@@ -206,9 +207,9 @@ public class TransactionRepository : ITransactionRepository
 
     public async Task<Transaction> AddAsync(Transaction transaction, CancellationToken cancellationToken = default)
     {
-        _logger.LogDebug("Adding new transaction: {Description} - {Amount}", 
+        _logger.LogDebug("Adding new transaction: {Description} - {Amount}",
             transaction.Description, transaction.Amount.Formatted);
-        
+
         await _context.Transactions.AddAsync(transaction, cancellationToken);
         return transaction;
     }
@@ -217,25 +218,25 @@ public class TransactionRepository : ITransactionRepository
     {
         var transactionList = transactions.ToList();
         _logger.LogDebug("Adding {Count} new transactions", transactionList.Count);
-        
+
         await _context.Transactions.AddRangeAsync(transactionList, cancellationToken);
         return transactionList;
     }
 
     public Task<Transaction> UpdateAsync(Transaction transaction, CancellationToken cancellationToken = default)
     {
-        _logger.LogDebug("Updating transaction: {Description} - {Amount}", 
+        _logger.LogDebug("Updating transaction: {Description} - {Amount}",
             transaction.Description, transaction.Amount.Formatted);
-        
+
         _context.Transactions.Update(transaction);
         return Task.FromResult(transaction);
     }
 
     public Task DeleteAsync(Transaction transaction, CancellationToken cancellationToken = default)
     {
-        _logger.LogDebug("Deleting transaction: {Description} - {Amount}", 
+        _logger.LogDebug("Deleting transaction: {Description} - {Amount}",
             transaction.Description, transaction.Amount.Formatted);
-        
+
         _context.Transactions.Remove(transaction);
         return Task.CompletedTask;
     }
@@ -296,32 +297,31 @@ public class TransactionRepository : ITransactionRepository
     {
         return criteria.SortBy.ToLowerInvariant() switch
         {
-            "transactiondate" => criteria.SortDescending 
+            "transactiondate" => criteria.SortDescending
                 ? query.OrderByDescending(t => t.TransactionDate)
                 : query.OrderBy(t => t.TransactionDate),
-            
-            "amount" => criteria.SortDescending 
+
+            "amount" => criteria.SortDescending
                 ? query.OrderByDescending(t => Math.Abs(t.Amount.Amount))
                 : query.OrderBy(t => Math.Abs(t.Amount.Amount)),
-            
-            "description" => criteria.SortDescending 
+
+            "description" => criteria.SortDescending
                 ? query.OrderByDescending(t => t.Description)
                 : query.OrderBy(t => t.Description),
-            
-            "account" => criteria.SortDescending 
+
+            "account" => criteria.SortDescending
                 ? query.OrderByDescending(t => t.Account.Name)
                 : query.OrderBy(t => t.Account.Name),
-            
-            "category" => criteria.SortDescending 
+
+            "category" => criteria.SortDescending
                 ? query.OrderByDescending(t => t.Category!.Name)
                 : query.OrderBy(t => t.Category!.Name),
-            
-            "createdat" => criteria.SortDescending 
+
+            "createdat" => criteria.SortDescending
                 ? query.OrderByDescending(t => t.CreatedAt)
                 : query.OrderBy(t => t.CreatedAt),
-            
+
             _ => query.OrderByDescending(t => t.TransactionDate) // Default sort
         };
     }
 }
-

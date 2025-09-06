@@ -1,10 +1,13 @@
 using System.ComponentModel;
-using TUnit.Core;
-using TUnit.Assertions;
-using Aspire.Hosting.Testing;
-using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net.Http.Json;
+
 using Aspire.Hosting;
+using Aspire.Hosting.Testing;
+
+using Microsoft.AspNetCore.Mvc.Testing;
+
+using TUnit.Assertions;
+using TUnit.Core;
 
 namespace BasicBudget.GraphQL.Tests;
 
@@ -19,12 +22,12 @@ public class MutationTests
     {
         var appBuilder = DistributedApplication.CreateBuilder();
         _app = appBuilder.Build();
-        
+
         await _app.StartAsync();
-        
+
         var resourceName = "basicbudget-graphql";
         var httpEndpoint = _app.GetEndpoint(resourceName, "https");
-        
+
         _httpClient = new HttpClient();
         _httpClient.BaseAddress = httpEndpoint;
     }
@@ -92,7 +95,7 @@ public class MutationTests
 
         // Assert - This should fail initially as GraphQL endpoint doesn't exist yet
         await Assert.That(response.IsSuccessStatusCode).IsTrue();
-        
+
         var content = await response.Content.ReadAsStringAsync();
         await Assert.That(content).Contains("createAccount");
     }
@@ -157,7 +160,7 @@ public class MutationTests
 
         // Assert - This should fail initially as GraphQL endpoint doesn't exist yet
         await Assert.That(response.IsSuccessStatusCode).IsTrue();
-        
+
         var content = await response.Content.ReadAsStringAsync();
         await Assert.That(content).Contains("createTransaction");
     }
@@ -223,7 +226,7 @@ public class MutationTests
 
         // Assert - This should fail initially as GraphQL endpoint doesn't exist yet
         await Assert.That(response.IsSuccessStatusCode).IsTrue();
-        
+
         var content = await response.Content.ReadAsStringAsync();
         await Assert.That(content).Contains("importStatement");
         await Assert.That(content).Contains("importSummary");
@@ -300,7 +303,7 @@ public class MutationTests
 
         // Assert - This should fail initially as GraphQL endpoint doesn't exist yet
         await Assert.That(response.IsSuccessStatusCode).IsTrue();
-        
+
         var content = await response.Content.ReadAsStringAsync();
         await Assert.That(content).Contains("createBudget");
     }

@@ -1,13 +1,18 @@
 using System.ComponentModel;
-using TUnit.Core;
-using TUnit.Assertions;
-using Aspire.Hosting.Testing;
-using Aspire.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net.Http.Json;
-using Npgsql;
-using Respawn;
+
+using Aspire.Hosting;
+using Aspire.Hosting.Testing;
+
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+
+using Npgsql;
+
+using Respawn;
+
+using TUnit.Assertions;
+using TUnit.Core;
 
 namespace BasicBudget.IntegrationTests;
 
@@ -16,14 +21,14 @@ public class BudgetScenarioTests : TUnit.Core.Interfaces.IAsyncInitializer, IAsy
 {
     private DistributedApplication? _app;
     private HttpClient? _httpClient;
-    
+
     public async Task InitializeAsync()
     {
         // TUnit async initialization - runs once per test class
         var appHost = await DistributedApplicationTestingBuilder.CreateAsync<Projects.BasicBudget_AppHost>();
         _app = await appHost.BuildAsync();
         await _app.StartAsync();
-        
+
         _httpClient = _app.CreateHttpClient("basicbudget-graphql");
         // Wait briefly for application to start
         await Task.Delay(2000);
@@ -36,7 +41,7 @@ public class BudgetScenarioTests : TUnit.Core.Interfaces.IAsyncInitializer, IAsy
         var connectionString = "Host=localhost;Port=5432;Database=basicbudget;Username=postgres;Password=postgres";
         using var connection = new NpgsqlConnection(connectionString);
         await connection.OpenAsync();
-        
+
         var respawn = await Respawner.CreateAsync(connection, new RespawnerOptions
         {
             DbAdapter = DbAdapter.Postgres,
@@ -66,7 +71,7 @@ public class BudgetScenarioTests : TUnit.Core.Interfaces.IAsyncInitializer, IAsy
 
         var categoryResponse = await _httpClient!.PostAsJsonAsync("/graphql", new { query = createCategoryMutation });
         await Assert.That(categoryResponse.IsSuccessStatusCode).IsTrue();
-        
+
         // For now, use test IDs - this will be fixed when GraphQL is implemented
         var groceryCategoryId = "test-grocery-category-id";
 
@@ -144,8 +149,8 @@ public class BudgetScenarioTests : TUnit.Core.Interfaces.IAsyncInitializer, IAsy
             }
             """;
 
-        var request = new 
-        { 
+        var request = new
+        {
             query = createBudgetMutation,
             variables = new { groceryCategoryId = groceryCategoryId }
         };
@@ -155,19 +160,19 @@ public class BudgetScenarioTests : TUnit.Core.Interfaces.IAsyncInitializer, IAsy
 
         // Assert - Verify budget creation succeeded with proper allocations
         await Assert.That(response.IsSuccessStatusCode).IsTrue();
-        
+
         var content = await response.Content.ReadAsStringAsync();
         await Assert.That(content).Contains("createBudget");
         await Assert.That(content).Contains("September 2024 Budget");
         await Assert.That(content).Contains("MONTHLY");
         await Assert.That(content).Contains("400.00"); // Grocery allocation
         await Assert.That(content).Contains("Groceries");
-        
+
         // Verify alert thresholds are set
         await Assert.That(content).Contains("alertThresholds");
         await Assert.That(content).Contains("75"); // 75% warning threshold
         await Assert.That(content).Contains("90"); // 90% critical threshold
-        
+
         // Verify no errors in response
         await Assert.That(content).DoesNotContain("errors");
 
