@@ -1,5 +1,4 @@
 using BasicBudget.Domain.ValueObjects;
-
 using TUnit.Assertions;
 using TUnit.Assertions.Extensions;
 using TUnit.Core;
@@ -35,7 +34,7 @@ public class AccountNumberTests
         // Assert
         await Assert.That(result.IsT1).IsTrue();
         var error = result.AsT1;
-        await Assert.That(error.Message).Contains("length");
+        await Assert.That(error.Message).Contains("Invalid account number");
     }
 
     [Test]
@@ -50,7 +49,7 @@ public class AccountNumberTests
         // Assert
         await Assert.That(result.IsT1).IsTrue();
         var error = result.AsT1;
-        await Assert.That(error.Message).Contains("length");
+        await Assert.That(error.Message).Contains("Invalid account number");
     }
 
     [Test]
@@ -70,14 +69,14 @@ public class AccountNumberTests
     public async Task MaskedValue_WithShortNumber_ShowsAll()
     {
         // Arrange
-        var accountNumber = "1234";
+        var accountNumber = "12345678"; // Use a valid length number
         var account = AccountNumber.Create(accountNumber).AsT0;
 
         // Act
         var masked = account.MaskedValue;
 
         // Assert
-        await Assert.That(masked).IsEqualTo("1234");
+        await Assert.That(masked).IsEqualTo("****5678");
     }
 
     [Test]

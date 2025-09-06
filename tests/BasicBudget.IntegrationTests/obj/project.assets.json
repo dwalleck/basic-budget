@@ -146,6 +146,46 @@
           "buildMultiTargeting/Aspire.Hosting.Orchestration.linux-x64.targets": {}
         }
       },
+      "Aspire.Hosting.PostgreSQL/9.4.2": {
+        "type": "package",
+        "dependencies": {
+          "AspNetCore.HealthChecks.NpgSql": "9.0.0",
+          "AspNetCore.HealthChecks.Uris": "9.0.0",
+          "Aspire.Hosting": "9.4.2",
+          "Google.Protobuf": "3.31.1",
+          "Grpc.AspNetCore": "2.71.0",
+          "Grpc.Net.ClientFactory": "2.71.0",
+          "Grpc.Tools": "2.72.0",
+          "Humanizer.Core": "2.14.1",
+          "JsonPatch.Net": "3.3.0",
+          "KubernetesClient": "17.0.4",
+          "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Configuration.Binder": "8.0.2",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.2",
+          "Microsoft.Extensions.Diagnostics.HealthChecks": "8.0.18",
+          "Microsoft.Extensions.Hosting": "8.0.1",
+          "Microsoft.Extensions.Hosting.Abstractions": "8.0.1",
+          "Microsoft.Extensions.Http": "8.0.1",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.3",
+          "Microsoft.Extensions.Options": "8.0.2",
+          "Microsoft.Extensions.Primitives": "8.0.0",
+          "Newtonsoft.Json": "13.0.3",
+          "Polly.Core": "8.6.2",
+          "Semver": "3.0.0",
+          "StreamJsonRpc": "2.22.11",
+          "System.IO.Hashing": "9.0.7"
+        },
+        "compile": {
+          "lib/net8.0/Aspire.Hosting.PostgreSQL.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Aspire.Hosting.PostgreSQL.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Aspire.Hosting.Testing/9.4.2": {
         "type": "package",
         "dependencies": {
@@ -226,6 +266,23 @@
           },
           "lib/net9.0/zh-Hant/Aspire.Hosting.Testing.resources.dll": {
             "locale": "zh-Hant"
+          }
+        }
+      },
+      "AspNetCore.HealthChecks.NpgSql/9.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Diagnostics.HealthChecks": "8.0.11",
+          "Npgsql": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0/HealthChecks.NpgSql.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/HealthChecks.NpgSql.dll": {
+            "related": ".xml"
           }
         }
       },
@@ -2364,7 +2421,8 @@
         "dependencies": {
           "Aspire.Dashboard.Sdk.linux-x64": "9.4.2",
           "Aspire.Hosting.AppHost": "9.4.2",
-          "Aspire.Hosting.Orchestration.linux-x64": "9.4.2"
+          "Aspire.Hosting.Orchestration.linux-x64": "9.4.2",
+          "Aspire.Hosting.PostgreSQL": "9.4.2"
         },
         "compile": {
           "bin/placeholder/BasicBudget.AppHost.dll": {}
@@ -2580,6 +2638,22 @@
         "tools/ext/dcpctrl"
       ]
     },
+    "Aspire.Hosting.PostgreSQL/9.4.2": {
+      "sha512": "1O9WaCeP2w2cIyqkpB83SxV7S+8bUrC+qJGGVt8SfYxo9P+XLIX+Jt2Z4bK1sbVHSc67FSgbMJSE0Q/BTjOakg==",
+      "type": "package",
+      "path": "aspire.hosting.postgresql/9.4.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "README.md",
+        "THIRD-PARTY-NOTICES.TXT",
+        "aspire.hosting.postgresql.9.4.2.nupkg.sha512",
+        "aspire.hosting.postgresql.nuspec",
+        "lib/net8.0/Aspire.Hosting.PostgreSQL.dll",
+        "lib/net8.0/Aspire.Hosting.PostgreSQL.xml"
+      ]
+    },
     "Aspire.Hosting.Testing/9.4.2": {
       "sha512": "1BymgMT0q4wXn7Ut9bBNQGGoOsgSFu4IVR6JWOlkbO0Nw4/pbEXb2PSmsI1tIVhga/Ib91td12WvKj6J1qn30w==",
       "type": "package",
@@ -2621,6 +2695,23 @@
         "lib/net9.0/tr/Aspire.Hosting.Testing.resources.dll",
         "lib/net9.0/zh-Hans/Aspire.Hosting.Testing.resources.dll",
         "lib/net9.0/zh-Hant/Aspire.Hosting.Testing.resources.dll"
+      ]
+    },
+    "AspNetCore.HealthChecks.NpgSql/9.0.0": {
+      "sha512": "npc58/AD5zuVxERdhCl2Kb7WnL37mwX42SJcXIwvmEig0/dugOLg3SIwtfvvh3TnvTwR/sk5LYNkkPaBdks61A==",
+      "type": "package",
+      "path": "aspnetcore.healthchecks.npgsql/9.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "aspnetcore.healthchecks.npgsql.9.0.0.nupkg.sha512",
+        "aspnetcore.healthchecks.npgsql.nuspec",
+        "icon.png",
+        "lib/net8.0/HealthChecks.NpgSql.dll",
+        "lib/net8.0/HealthChecks.NpgSql.xml",
+        "lib/netstandard2.0/HealthChecks.NpgSql.dll",
+        "lib/netstandard2.0/HealthChecks.NpgSql.xml"
       ]
     },
     "AspNetCore.HealthChecks.Uris/9.0.0": {

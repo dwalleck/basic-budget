@@ -63,14 +63,20 @@ public class AccountTests
     }
 
     [Test]
-    public async Task UpdateBalance_WithDifferentCurrency_ThrowsException()
+    public async Task UpdateBalance_WithDifferentCurrency_ReturnsDomainError()
     {
         // Arrange
         var account = CreateValidAccount();
         var differentCurrencyBalance = Money.Create(1500.00m, "EUR").AsT0;
 
-        // Act & Assert
-        await Assert.That(() => account.UpdateBalance(differentCurrencyBalance)).Throws<ArgumentException>();
+        // Act
+        var result = account.UpdateBalance(differentCurrencyBalance);
+        
+        // Assert
+        await Assert.That(result.IsT1).IsTrue();
+        var error = result.AsT1;
+        await Assert.That(error.GetType()).IsEqualTo(typeof(BasicBudget.Domain.Errors.ValidationError));
+        await Assert.That(error.Code).IsEqualTo("CURRENCY_MISMATCH");
     }
 
     private Account CreateValidAccount()

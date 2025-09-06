@@ -45,26 +45,25 @@ public class CreateAccountCommandHandler : IRequestHandler<CreateAccountCommand,
             return new DuplicateAccountNumberError(request.AccountNumber);
         }
 
-        // Create the account using domain entity constructor
-        try
-        {
-            var account = new Account(
-                accountNumber,
-                request.Name,
-                request.AccountType,
-                request.InitialBalance
-            );
+        // Create the account using the domain factory method
+        var accountResult = Account.Create(
+            accountNumber,
+            request.Name,
+            request.AccountType,
+            request.InitialBalance
+        );
 
-            // Persist the account
-            await _accountRepository.AddAsync(account, cancellationToken);
-            await _accountRepository.SaveChangesAsync(cancellationToken);
-            return account;
-        }
-        catch (ArgumentException ex)
+        if (accountResult.IsT1)
         {
-            // Domain validation errors from Account constructor
-            // These should be converted to appropriate domain errors
-            return new InvalidAccountNumberError(request.AccountNumber);
+            return accountResult.AsT1; // Return domain error
         }
+
+        var account = accountResult.AsT0;
+
+        // Persist the account
+        await _accountRepository.AddAsync(account, cancellationToken);
+        await _accountRepository.SaveChangesAsync(cancellationToken);
+        
+        return account;
     }
 }

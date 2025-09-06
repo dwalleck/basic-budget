@@ -1,0 +1,13 @@
+/home/dwalleck/repos/basic-budget/src/BasicBudget.Domain/bin/Debug/net10.0/BasicBudget.Domain.deps.json
+/home/dwalleck/repos/basic-budget/src/BasicBudget.Domain/bin/Debug/net10.0/BasicBudget.Domain.dll
+/home/dwalleck/repos/basic-budget/src/BasicBudget.Domain/bin/Debug/net10.0/BasicBudget.Domain.pdb
+/home/dwalleck/repos/basic-budget/src/BasicBudget.Domain/obj/Debug/net10.0/BasicBudget.Domain.csproj.AssemblyReference.cache
+/home/dwalleck/repos/basic-budget/src/BasicBudget.Domain/obj/Debug/net10.0/BasicBudget.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/home/dwalleck/repos/basic-budget/src/BasicBudget.Domain/obj/Debug/net10.0/BasicBudget.Domain.AssemblyInfoInputs.cache
+/home/dwalleck/repos/basic-budget/src/BasicBudget.Domain/obj/Debug/net10.0/BasicBudget.Domain.AssemblyInfo.cs
+/home/dwalleck/repos/basic-budget/src/BasicBudget.Domain/obj/Debug/net10.0/BasicBudget.Domain.csproj.CoreCompileInputs.cache
+/home/dwalleck/repos/basic-budget/src/BasicBudget.Domain/obj/Debug/net10.0/BasicBudget.Domain.sourcelink.json
+/home/dwalleck/repos/basic-budget/src/BasicBudget.Domain/obj/Debug/net10.0/BasicBudget.Domain.dll
+/home/dwalleck/repos/basic-budget/src/BasicBudget.Domain/obj/Debug/net10.0/refint/BasicBudget.Domain.dll
+/home/dwalleck/repos/basic-budget/src/BasicBudget.Domain/obj/Debug/net10.0/BasicBudget.Domain.pdb
+/home/dwalleck/repos/basic-budget/src/BasicBudget.Domain/obj/Debug/net10.0/ref/BasicBudget.Domain.dll

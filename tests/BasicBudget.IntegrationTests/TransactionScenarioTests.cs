@@ -6,6 +6,7 @@ using Aspire.Hosting.Testing;
 
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Http.Resilience;
 
 using Npgsql;
 
@@ -27,19 +28,32 @@ public class TransactionScenarioTests : TUnit.Core.Interfaces.IAsyncInitializer,
     {
         // TUnit async initialization - runs once per test class
         var appHost = await DistributedApplicationTestingBuilder.CreateAsync<Projects.BasicBudget_AppHost>();
+        
+        // Configure HTTP client resilience handler for better reliability
+        appHost.Services.ConfigureHttpClientDefaults(clientBuilder =>
+        {
+            clientBuilder.AddStandardResilienceHandler();
+        });
+        
         _app = await appHost.BuildAsync();
         await _app.StartAsync();
 
-        _httpClient = _app.CreateHttpClient("basicbudget-graphql");
-        // Wait briefly for application to start
-        await Task.Delay(2000);
+        // Use the correct resource name from AppHost ("graphql-api")
+        _httpClient = _app.CreateHttpClient("graphql-api");
+        
+        // Wait for resources to be healthy before proceeding
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+        await _app.ResourceNotifications.WaitForResourceHealthyAsync("graphql-api", cts.Token);
+        await _app.ResourceNotifications.WaitForResourceHealthyAsync("postgresdb", cts.Token);
     }
 
     [Before(HookType.Test)]
     public async Task ResetDatabase()
     {
         // TUnit per-test reset - runs before each test
-        var connectionString = "Host=localhost;Port=5432;Database=basicbudget;Username=postgres;Password=postgres";
+        // Get the connection string from Aspire's managed resources
+        var connectionString = await _app!.GetConnectionStringAsync("postgresdb");
+        
         using var connection = new NpgsqlConnection(connectionString);
         await connection.OpenAsync();
 
