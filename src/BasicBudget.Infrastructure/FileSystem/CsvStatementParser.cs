@@ -23,12 +23,12 @@ public class CsvStatementParser : IStatementParser
     {
         if (string.IsNullOrWhiteSpace(format))
         {
-            return DomainError.Validation("INVALID_FORMAT", "File format cannot be empty", nameof(format));
+            return new ValidationError("File format cannot be empty", "INVALID_FORMAT");
         }
 
         if (string.IsNullOrWhiteSpace(content))
         {
-            return DomainError.Validation("EMPTY_FILE_CONTENT", "File content cannot be empty", nameof(content));
+            return new ValidationError("File content cannot be empty", "EMPTY_FILE_CONTENT");
         }
 
         try
@@ -38,17 +38,13 @@ public class CsvStatementParser : IStatementParser
                 "CSV" => await ParseCsvAsync(content, cancellationToken),
                 "QFX" => await ParseQfxAsync(content, cancellationToken),
                 "OFX" => await ParseOfxAsync(content, cancellationToken),
-                _ => DomainError.Validation(
-                    "UNSUPPORTED_FORMAT", 
-                    $"File format '{format}' is not supported. Supported formats: CSV, QFX, OFX",
-                    nameof(format)
-                )
+                _ => new ValidationError($"File format '{format}' is not supported. Supported formats: CSV, QFX, OFX", "UNSUPPORTED_FORMAT")
             };
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to parse statement file with format: {Format}", format);
-            return DomainError.Infrastructure(
+            return new InfrastructureError(
                 "STATEMENT_PARSE_FAILED",
                 $"Failed to parse statement file: {ex.Message}",
                 ex
@@ -67,7 +63,7 @@ public class CsvStatementParser : IStatementParser
 
         if (lines.Length == 0)
         {
-            return DomainError.Validation("EMPTY_CSV_FILE", "CSV file contains no data", nameof(csvContent));
+            return new ValidationError("CSV file contains no data", "EMPTY_CSV_FILE");
         }
 
         // Detect CSV format and header structure
@@ -107,10 +103,7 @@ public class CsvStatementParser : IStatementParser
 
         if (transactions.Count == 0)
         {
-            return DomainError.BusinessRule(
-                "NO_VALID_TRANSACTIONS", 
-                "No valid transactions found in the CSV file"
-            );
+            return new ValidationError("No valid transactions found in the CSV file", "NO_VALID_TRANSACTIONS");
         }
 
         _logger.LogInformation("Successfully parsed {Count} transactions from CSV", transactions.Count);
@@ -126,11 +119,7 @@ public class CsvStatementParser : IStatementParser
         // QFX parsing implementation would go here
         // For now, return not implemented error
         await Task.Delay(1, cancellationToken); // Prevent compiler warning
-        
-        return DomainError.BusinessRule(
-            "QFX_NOT_IMPLEMENTED", 
-            "QFX file parsing is not yet implemented"
-        );
+        return new ValidationError("QFX file parsing is not yet implemented", "QFX_NOT_IMPLEMENTED");
     }
 
     private async Task<OneOf<IReadOnlyList<ParsedTransactionData>, DomainError>> ParseOfxAsync(
@@ -143,7 +132,7 @@ public class CsvStatementParser : IStatementParser
         // For now, return not implemented error
         await Task.Delay(1, cancellationToken); // Prevent compiler warning
         
-        return DomainError.BusinessRule(
+        return new ValidationError(
             "OFX_NOT_IMPLEMENTED", 
             "OFX file parsing is not yet implemented"
         );
@@ -153,7 +142,7 @@ public class CsvStatementParser : IStatementParser
     {
         if (lines.Length == 0)
         {
-            return DomainError.Validation("EMPTY_CSV", "CSV file is empty", "lines");
+            return new ValidationError("CSV file is empty", "EMPTY_CSV");
         }
 
         var firstLine = lines[0].ToLowerInvariant();
@@ -185,12 +174,7 @@ public class CsvStatementParser : IStatementParser
                 AmountColumnIndex: 2
             );
         }
-
-        return DomainError.Validation(
-            "INVALID_CSV_FORMAT", 
-            "Unable to detect CSV format. Expected at least 3 columns: Date, Description, Amount",
-            "format"
-        );
+        return new ValidationError("Unable to detect CSV format. Expected at least 3 columns: Date, Description, Amount", "INVALID_CSV_FORMAT");
     }
 
     private static char DetectDelimiter(string line)
@@ -240,48 +224,32 @@ public class CsvStatementParser : IStatementParser
 
             if (fields.Length < 3)
             {
-                return DomainError.Validation(
-                    "INSUFFICIENT_COLUMNS", 
-                    $"Line {lineNumber}: Expected at least 3 columns, found {fields.Length}",
-                    $"line{lineNumber}"
-                );
+                return new ValidationError($"Line {lineNumber}: Expected at least 3 columns, found {fields.Length}", "INSUFFICIENT_COLUMNS");
             }
 
             // Parse date
             var dateText = GetFieldValue(fields, format.DateColumnIndex);
             if (!TryParseDate(dateText, out var transactionDate))
             {
-                return DomainError.Validation(
-                    "INVALID_DATE_FORMAT", 
-                    $"Line {lineNumber}: Unable to parse date '{dateText}'",
-                    $"line{lineNumber}.date"
-                );
+                return new ValidationError($"Line {lineNumber}: Unable to parse date '{dateText}'", "INVALID_DATE_FORMAT");
             }
 
             // Parse description
             var description = GetFieldValue(fields, format.DescriptionColumnIndex);
             if (string.IsNullOrWhiteSpace(description))
             {
-                return DomainError.Validation(
-                    "MISSING_DESCRIPTION", 
-                    $"Line {lineNumber}: Transaction description is required",
-                    $"line{lineNumber}.description"
-                );
+                return new ValidationError($"Line {lineNumber}: Transaction description is required", "MISSING_DESCRIPTION");
             }
 
             // Parse amount
             var amountText = GetFieldValue(fields, format.AmountColumnIndex);
             if (!TryParseAmount(amountText, out var amount))
             {
-                return DomainError.Validation(
-                    "INVALID_AMOUNT_FORMAT", 
-                    $"Line {lineNumber}: Unable to parse amount '{amountText}'",
-                    $"line{lineNumber}.amount"
-                );
+                return new ValidationError($"Line {lineNumber}: Unable to parse amount '{amountText}'", "INVALID_AMOUNT_FORMAT");
             }
 
             // For now, assume USD currency - could be enhanced to detect from file
-            var money = new Money(amount, "USD");
+            var moneyResult = Money.Create(amount, "USD"); if (moneyResult.IsT1) return new ValidationError(moneyResult.AsT1.Message, "INVALID_MONEY"); var money = moneyResult.AsT0;
 
             await Task.Delay(1); // Prevent compiler warning for async method
             
@@ -289,7 +257,7 @@ public class CsvStatementParser : IStatementParser
         }
         catch (Exception ex)
         {
-            return DomainError.Infrastructure(
+            return new InfrastructureError(
                 "CSV_LINE_PARSE_ERROR", 
                 $"Line {lineNumber}: Failed to parse CSV line - {ex.Message}",
                 ex

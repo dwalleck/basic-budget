@@ -50,10 +50,7 @@ public class ImportStatementCommandHandler : IRequestHandler<ImportStatementComm
         var account = await _accountRepository.GetByIdAsync(request.AccountId, cancellationToken);
         if (account == null)
         {
-            return DomainError.NotFound(
-                "ACCOUNT_NOT_FOUND",
-                $"Account with ID '{request.AccountId}' was not found"
-            );
+            return new AccountNotFoundError(request.AccountId);
         }
 
         // Parse the statement file
@@ -84,8 +81,8 @@ public class ImportStatementCommandHandler : IRequestHandler<ImportStatementComm
                     var existingTransaction = await _transactionRepository.FindDuplicateAsync(
                         request.AccountId,
                         transactionData.Amount,
-                        transactionData.Description,
                         transactionData.TransactionDate,
+                        transactionData.Description,
                         cancellationToken
                     );
 
@@ -102,7 +99,7 @@ public class ImportStatementCommandHandler : IRequestHandler<ImportStatementComm
                     transactionData.Amount,
                     transactionData.Description,
                     transactionData.TransactionDate,
-                    category: null // Categories will be assigned later through categorization
+                    categoryId: null // Categories will be assigned later through categorization
                 );
 
                 if (transactionResult.IsT1)
@@ -115,15 +112,8 @@ public class ImportStatementCommandHandler : IRequestHandler<ImportStatementComm
                 importedTransactions.Add(transaction);
                 successfulImports++;
 
-                // Update account balance
-                var balanceUpdateResult = account.UpdateBalance(transactionData.Amount);
-                if (balanceUpdateResult.IsT1)
-                {
-                    failedImports++;
-                    importedTransactions.Remove(transaction);
-                    successfulImports--;
-                    continue;
-                }
+                // Add transaction to account for balance recalculation
+                account.AddTransaction(transaction);
             }
             catch
             {
@@ -152,9 +142,9 @@ public class ImportStatementCommandHandler : IRequestHandler<ImportStatementComm
         }
         catch (Exception ex)
         {
-            return DomainError.Infrastructure(
-                "IMPORT_SAVE_FAILED",
+            return new InfrastructureError(
                 "Failed to save imported transactions to database",
+                "IMPORT_SAVE_FAILED",
                 ex
             );
         }

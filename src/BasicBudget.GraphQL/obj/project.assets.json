@@ -198,6 +198,31 @@
           }
         }
       },
+      "HotChocolate.Data/15.1.10": {
+        "type": "package",
+        "dependencies": {
+          "GreenDonut.Data": "15.1.10",
+          "GreenDonut.Data.Abstractions": "15.1.10",
+          "GreenDonut.Data.Primitives": "15.1.10",
+          "HotChocolate.Execution": "15.1.10",
+          "HotChocolate.Execution.Projections": "15.1.10",
+          "HotChocolate.Types.CursorPagination": "15.1.10"
+        },
+        "compile": {
+          "lib/net9.0/HotChocolate.Data.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/HotChocolate.Data.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "build/HotChocolate.Data.props": {},
+          "build/HotChocolate.Data.targets": {}
+        }
+      },
       "HotChocolate.Execution/15.1.10": {
         "type": "package",
         "dependencies": {
@@ -1119,6 +1144,27 @@
         "lib/net8.0/HotChocolate.CostAnalysis.xml",
         "lib/net9.0/HotChocolate.CostAnalysis.dll",
         "lib/net9.0/HotChocolate.CostAnalysis.xml",
+        "strawberryshake-signet.png"
+      ]
+    },
+    "HotChocolate.Data/15.1.10": {
+      "sha512": "Ah4HE+SlrEeDrUneat7vd0jiYCNz4iNd/jlT77ZmjCYMJ4sNFoeyip5qqQqbREcIo5mH9V2xL8XMAZqxw3QCuQ==",
+      "type": "package",
+      "path": "hotchocolate.data/15.1.10",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "build/HotChocolate.Data.props",
+        "build/HotChocolate.Data.targets",
+        "greendonut-signet.png",
+        "hotchocolate-signet.png",
+        "hotchocolate.data.15.1.10.nupkg.sha512",
+        "hotchocolate.data.nuspec",
+        "lib/net8.0/HotChocolate.Data.dll",
+        "lib/net8.0/HotChocolate.Data.xml",
+        "lib/net9.0/HotChocolate.Data.dll",
+        "lib/net9.0/HotChocolate.Data.xml",
         "strawberryshake-signet.png"
       ]
     },
@@ -2073,7 +2119,9 @@
     "net10.0": [
       "BasicBudget.Application >= 1.0.0",
       "BasicBudget.Domain >= 1.0.0",
-      "HotChocolate.AspNetCore >= 15.1.10"
+      "HotChocolate.AspNetCore >= 15.1.10",
+      "HotChocolate.Data >= 15.1.10",
+      "MediatR >= 13.0.0"
     ]
   },
   "packageFolders": {
@@ -2129,6 +2177,14 @@
           "HotChocolate.AspNetCore": {
             "target": "Package",
             "version": "[15.1.10, )"
+          },
+          "HotChocolate.Data": {
+            "target": "Package",
+            "version": "[15.1.10, )"
+          },
+          "MediatR": {
+            "target": "Package",
+            "version": "[13.0.0, )"
           }
         },
         "imports": [

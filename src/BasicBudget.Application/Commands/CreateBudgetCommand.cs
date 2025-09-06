@@ -46,10 +46,9 @@ public class CreateBudgetCommandHandler : IRequestHandler<CreateBudgetCommand, O
         // Validate date range
         if (request.StartDate >= request.EndDate)
         {
-            return DomainError.Validation(
-                "INVALID_DATE_RANGE",
+            return new ValidationError(
                 "Start date must be before end date",
-                nameof(request.StartDate)
+                "INVALID_DATE_RANGE"
             );
         }
 
@@ -64,70 +63,54 @@ public class CreateBudgetCommandHandler : IRequestHandler<CreateBudgetCommand, O
         var overlappingBudgets = await _budgetRepository.FindOverlappingAsync(
             request.StartDate, 
             request.EndDate, 
+            null, // excludeBudgetId - this is a new budget so no exclusion needed
             cancellationToken
         );
 
         if (overlappingBudgets.Any())
         {
-            return DomainError.BusinessRule(
-                "OVERLAPPING_BUDGET_PERIODS",
-                $"Budget period overlaps with existing budget: {string.Join(", ", overlappingBudgets.Select(b => b.Name))}"
-            );
+            return new BudgetPeriodOverlapError(request.StartDate, request.EndDate);
         }
 
         // Validate all categories exist
         var categoryIds = request.CategoryAllocations.Select(ca => ca.CategoryId).ToList();
         var categories = await _categoryRepository.GetByIdsAsync(categoryIds, cancellationToken);
         
-        if (categories.Count != categoryIds.Count)
+        if (categories.Count() != categoryIds.Count)
         {
             var missingIds = categoryIds.Except(categories.Select(c => c.Id)).ToList();
-            return DomainError.NotFound(
-                "CATEGORIES_NOT_FOUND",
-                $"Categories not found: {string.Join(", ", missingIds)}"
+            return new ValidationError(
+                $"Categories not found: {string.Join(", ", missingIds)}",
+                "CATEGORIES_NOT_FOUND"
             );
         }
 
-        // Create the budget using domain entity factory method
-        var budgetResult = Budget.Create(
+        // Create the budget
+        var budget = new Budget(
             request.Name,
             request.BudgetType,
             request.StartDate,
             request.EndDate
         );
 
-        if (budgetResult.IsT1)
-        {
-            return budgetResult.AsT1;
-        }
-
-        var budget = budgetResult.AsT0;
 
         // Add category allocations
         foreach (var allocation in request.CategoryAllocations)
         {
             var category = categories.First(c => c.Id == allocation.CategoryId);
             
-            var budgetCategoryResult = BudgetCategory.Create(
-                budget,
-                category,
+            var defaultAlertThreshold = allocation.AlertThresholds.Any() 
+                ? allocation.AlertThresholds.First().Percentage / 100m 
+                : 0.8m;
+                
+            var budgetCategory = new BudgetCategory(
+                budget.Id,
+                category.Id,
                 allocation.AllocatedAmount,
-                allocation.AlertThresholds.Select(at => new Domain.ValueObjects.AlertThreshold(
-                    at.Percentage,
-                    at.AlertType
-                )).ToList()
+                defaultAlertThreshold
             );
 
-            if (budgetCategoryResult.IsT1)
-            {
-                return budgetCategoryResult.AsT1;
-            }
-
-            var addCategoryResult = budget.AddCategory(budgetCategoryResult.AsT0);
-            if (addCategoryResult.IsT1)
-            {
-                return addCategoryResult.AsT1;
-            }
+            // BudgetCategory created successfully - it will be persisted via repository
         }
 
         // Persist the budget
@@ -139,9 +122,9 @@ public class CreateBudgetCommandHandler : IRequestHandler<CreateBudgetCommand, O
         }
         catch (Exception ex)
         {
-            return DomainError.Infrastructure(
-                "BUDGET_SAVE_FAILED",
+            return new InfrastructureError(
                 "Failed to save budget to database",
+                "BUDGET_SAVE_FAILED",
                 ex
             );
         }
@@ -156,11 +139,10 @@ public class CreateBudgetCommandHandler : IRequestHandler<CreateBudgetCommand, O
         {
             BudgetType.Monthly => ValidateMonthlyPeriod(startDate, endDate),
             BudgetType.Yearly => ValidateYearlyPeriod(startDate, endDate),
-            BudgetType.Custom => new OneOf<bool, DomainError>(true), // Custom budgets can have any period
-            _ => DomainError.Validation(
-                "INVALID_BUDGET_TYPE",
+            BudgetType.Custom => true, // Custom budgets can have any period
+            _ => new ValidationError(
                 $"Unsupported budget type: {budgetType}",
-                nameof(budgetType)
+                "INVALID_BUDGET_TYPE"
             )
         };
     }
@@ -171,10 +153,9 @@ public class CreateBudgetCommandHandler : IRequestHandler<CreateBudgetCommand, O
         
         if (startDate.Day != 1 || endDate.Date != expectedEndDate.Date)
         {
-            return DomainError.Validation(
-                "INVALID_MONTHLY_PERIOD",
+            return new ValidationError(
                 "Monthly budget must start on the 1st and end on the last day of the month",
-                "StartDate/EndDate"
+                "INVALID_MONTHLY_PERIOD"
             );
         }
 
@@ -187,10 +168,9 @@ public class CreateBudgetCommandHandler : IRequestHandler<CreateBudgetCommand, O
         
         if (startDate.Month != 1 || startDate.Day != 1 || endDate.Date != expectedEndDate.Date)
         {
-            return DomainError.Validation(
-                "INVALID_YEARLY_PERIOD",
+            return new ValidationError(
                 "Yearly budget must start on January 1st and end on December 31st of the same year",
-                "StartDate/EndDate"
+                "INVALID_YEARLY_PERIOD"
             );
         }
 

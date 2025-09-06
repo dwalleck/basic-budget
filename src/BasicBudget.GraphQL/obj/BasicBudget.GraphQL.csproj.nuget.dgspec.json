@@ -734,6 +734,14 @@
             "HotChocolate.AspNetCore": {
               "target": "Package",
               "version": "[15.1.10, )"
+            },
+            "HotChocolate.Data": {
+              "target": "Package",
+              "version": "[15.1.10, )"
+            },
+            "MediatR": {
+              "target": "Package",
+              "version": "[13.0.0, )"
             }
           },
           "imports": [

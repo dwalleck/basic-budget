@@ -72,10 +72,7 @@ public class GetBudgetProgressQueryHandler : IRequestHandler<GetBudgetProgressQu
             var budget = await _budgetRepository.GetByIdWithCategoriesAsync(request.BudgetId, cancellationToken);
             if (budget == null)
             {
-                return DomainError.NotFound(
-                    "BUDGET_NOT_FOUND",
-                    $"Budget with ID '{request.BudgetId}' was not found"
-                );
+                return new BudgetNotFoundError(request.BudgetId);
             }
 
             // Get all transactions for this budget period
@@ -104,11 +101,11 @@ public class GetBudgetProgressQueryHandler : IRequestHandler<GetBudgetProgressQu
             var categoryProgressList = new List<CategoryProgress>();
             var activeAlerts = new List<BudgetAlert>();
 
-            foreach (var budgetCategory in budget.Categories)
+            foreach (var budgetCategory in budget.BudgetCategories)
             {
                 var spentAmount = spendingByCategory.TryGetValue(budgetCategory.CategoryId, out var spent) 
-                    ? new Money(spent, budgetCategory.AllocatedAmount.Currency)
-                    : new Money(0, budgetCategory.AllocatedAmount.Currency);
+                    ? Money.Create(spent, budgetCategory.AllocatedAmount.Currency).AsT0
+                    : Money.Zero(budgetCategory.AllocatedAmount.Currency);
 
                 var remainingAmount = budgetCategory.AllocatedAmount - spentAmount;
                 var percentageUsed = budgetCategory.AllocatedAmount.Amount == 0 
@@ -116,9 +113,18 @@ public class GetBudgetProgressQueryHandler : IRequestHandler<GetBudgetProgressQu
                     : (spentAmount.Amount / budgetCategory.AllocatedAmount.Amount) * 100;
 
                 // Check for triggered alerts
-                var triggeredAlerts = budgetCategory.AlertThresholds
-                    .Where(threshold => percentageUsed >= threshold.Percentage)
-                    .ToList();
+                var triggeredAlerts = new List<AlertThreshold>();
+                if (budgetCategory.ShouldAlert())
+                {
+                    var alertThresholdValueObject = AlertThreshold.Create(
+                        budgetCategory.AlertThreshold * 100,
+                        AlertType.WARNING
+                    );
+                    if (alertThresholdValueObject.IsT0)
+                    {
+                        triggeredAlerts.Add(alertThresholdValueObject.AsT0);
+                    }
+                }
 
                 if (triggeredAlerts.Any())
                 {
@@ -127,8 +133,8 @@ public class GetBudgetProgressQueryHandler : IRequestHandler<GetBudgetProgressQu
                         activeAlerts.Add(new BudgetAlert(
                             budgetCategory.Id,
                             budgetCategory.Category.Name,
-                            threshold.AlertType,
-                            threshold.Percentage,
+                            AlertType.WARNING,
+                            budgetCategory.AlertThreshold * 100,
                             percentageUsed,
                             budgetCategory.AllocatedAmount,
                             spentAmount,
@@ -142,20 +148,20 @@ public class GetBudgetProgressQueryHandler : IRequestHandler<GetBudgetProgressQu
                     spentAmount,
                     remainingAmount,
                     percentageUsed,
-                    triggeredAlerts
+                    triggeredAlerts.AsReadOnly()
                 ));
             }
 
             // Calculate overall totals
-            var totalAllocated = new Money(
-                budget.Categories.Sum(c => c.AllocatedAmount.Amount),
-                budget.Categories.First().AllocatedAmount.Currency
-            );
+            var totalAllocated = Money.Create(
+                budget.BudgetCategories.Sum(c => c.AllocatedAmount.Amount),
+                budget.BudgetCategories.First().AllocatedAmount.Currency
+            ).AsT0;
 
-            var totalSpent = new Money(
+            var totalSpent = Money.Create(
                 categoryProgressList.Sum(cp => cp.SpentAmount.Amount),
                 totalAllocated.Currency
-            );
+            ).AsT0;
 
             var totalRemaining = totalAllocated - totalSpent;
             var overallPercentageUsed = totalAllocated.Amount == 0 
@@ -163,11 +169,20 @@ public class GetBudgetProgressQueryHandler : IRequestHandler<GetBudgetProgressQu
                 : (totalSpent.Amount / totalAllocated.Amount) * 100;
 
             // Calculate projected overage if applicable
-            var projectedOverage = await _budgetCalculationService.CalculateProjectedOverageAsync(
+            var domainProjectedOverage = await _budgetCalculationService.CalculateProjectedOverageAsync(
                 budget, 
-                transactions,
+                transactions.ToList().AsReadOnly(),
                 cancellationToken
             );
+
+            // Convert domain ProjectedOverage to application ProjectedOverage
+            var projectedOverage = domainProjectedOverage != null 
+                ? new ProjectedOverage(
+                    domainProjectedOverage.ProjectedOverageAmount,
+                    domainProjectedOverage.ProjectedDate,
+                    domainProjectedOverage.ContributingCategoryIds
+                )
+                : null;
 
             var summary = new BudgetProgressSummary(
                 budget,
@@ -175,8 +190,8 @@ public class GetBudgetProgressQueryHandler : IRequestHandler<GetBudgetProgressQu
                 totalSpent,
                 totalRemaining,
                 overallPercentageUsed,
-                categoryProgressList,
-                activeAlerts,
+                categoryProgressList.AsReadOnly(),
+                activeAlerts.AsReadOnly(),
                 projectedOverage
             );
 
@@ -184,9 +199,9 @@ public class GetBudgetProgressQueryHandler : IRequestHandler<GetBudgetProgressQu
         }
         catch (Exception ex)
         {
-            return DomainError.Infrastructure(
-                "BUDGET_PROGRESS_QUERY_FAILED",
+            return new InfrastructureError(
                 "Failed to calculate budget progress",
+                "BUDGET_PROGRESS_QUERY_FAILED",
                 ex
             );
         }

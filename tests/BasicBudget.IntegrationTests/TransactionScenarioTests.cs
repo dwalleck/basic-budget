@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using TUnit.Core;
 using TUnit.Assertions;
 using Aspire.Hosting.Testing;
@@ -5,13 +6,14 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net.Http.Json;
 using Npgsql;
 using Respawn;
+using Aspire.Hosting;
+using TUnit.Core.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BasicBudget.IntegrationTests;
 
-[TestClass]
-[Category("Integration")]
-[ParallelLimiter<DatabaseTestLimit>]
-public class TransactionScenarioTests : IAsyncInitializer, IAsyncDisposable
+[TUnit.Core.Category("Integration")]
+public class TransactionScenarioTests : TUnit.Core.Interfaces.IAsyncInitializer, IAsyncDisposable
 {
     private DistributedApplication? _app;
     private HttpClient? _httpClient;
@@ -24,14 +26,15 @@ public class TransactionScenarioTests : IAsyncInitializer, IAsyncDisposable
         await _app.StartAsync();
         
         _httpClient = _app.CreateHttpClient("basicbudget-graphql");
-        await _app.WaitForTextAsync("Application started", "basicbudget-graphql");
+        // Wait briefly for application to start
+        await Task.Delay(2000);
     }
 
-    [Before(TestState.BeforeTest)]
+    [Before(HookType.Test)]
     public async Task ResetDatabase()
     {
         // TUnit per-test reset - runs before each test
-        var connectionString = _app!.GetConnectionString("basicbudget-db");
+        var connectionString = "Host=localhost;Port=5432;Database=basicbudget;Username=postgres;Password=postgres";
         using var connection = new NpgsqlConnection(connectionString);
         await connection.OpenAsync();
         

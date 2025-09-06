@@ -1,4 +1,6 @@
 using BasicBudget.Domain.ValueObjects;
+using BasicBudget.Domain.Errors;
+using OneOf;
 
 namespace BasicBudget.Domain.Entities;
 
@@ -62,19 +64,20 @@ public class Account
         UpdatedAt = DateTime.UtcNow;
     }
     
-    public void UpdateBalance(Money newBalance)
+    public OneOf<Success, DomainError> UpdateBalance(Money newBalance)
     {
         if (newBalance == null)
-            throw new ArgumentNullException(nameof(newBalance));
+            return new ValidationError("Balance cannot be null", "INVALID_BALANCE");
             
         if (newBalance.Currency != CurrentBalance.Currency)
-            throw new ArgumentException("Currency mismatch when updating balance");
+            return new ValidationError("Currency mismatch when updating balance", "CURRENCY_MISMATCH");
             
         if (newBalance.IsNegative && !CanHaveNegativeBalance())
-            throw new ArgumentException($"Account type {AccountType} cannot have negative balance");
+            return new NegativeBalanceNotAllowedError(AccountType.ToString());
             
         CurrentBalance = newBalance;
         UpdatedAt = DateTime.UtcNow;
+        return new Success();
     }
     
     public bool CanHaveNegativeBalance()

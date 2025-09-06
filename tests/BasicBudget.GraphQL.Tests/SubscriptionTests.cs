@@ -1,22 +1,23 @@
+using System.ComponentModel;
 using TUnit.Core;
 using TUnit.Assertions;
 using Aspire.Hosting.Testing;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Aspire.Hosting;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 
 namespace BasicBudget.GraphQL.Tests;
 
-[TestClass]
-[Category("Contract")]
+[TUnit.Core.Category("Contract")]
 public class SubscriptionTests
 {
     private DistributedApplication? _app;
     private ClientWebSocket? _webSocket;
     private string? _graphqlWsEndpoint;
 
-    [Before(TestState.BeforeTest)]
+    [Before(HookType.Test)]
     public async Task SetupAsync()
     {
         var appBuilder = DistributedApplication.CreateBuilder();
@@ -35,7 +36,7 @@ public class SubscriptionTests
         _webSocket.Options.AddSubProtocol("graphql-ws");
     }
 
-    [After(TestState.AfterTest)]
+    [After(HookType.Test)]
     public async Task CleanupAsync()
     {
         if (_webSocket != null)
@@ -106,7 +107,7 @@ public class SubscriptionTests
             await _webSocket.SendAsync(new ArraySegment<byte>(subBytes), WebSocketMessageType.Text, true, CancellationToken.None);
             
             return true;
-        }).DoesNotThrowException();
+        }).ThrowsNothing();
     }
 
     [Test]
@@ -157,6 +158,6 @@ public class SubscriptionTests
             await _webSocket.SendAsync(new ArraySegment<byte>(subBytes), WebSocketMessageType.Text, true, CancellationToken.None);
             
             return true;
-        }).DoesNotThrowException();
+        }).ThrowsNothing();
     }
 }

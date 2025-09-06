@@ -24,7 +24,7 @@ public class BudgetCategoryConfiguration : IEntityTypeConfiguration<BudgetCatego
             .HasColumnName("category_id")
             .IsRequired();
 
-        // Configure Money value object
+        // Configure Money value objects
         builder.OwnsOne(bc => bc.AllocatedAmount, money =>
         {
             money.Property(m => m.Amount)
@@ -33,10 +33,28 @@ public class BudgetCategoryConfiguration : IEntityTypeConfiguration<BudgetCatego
                 .IsRequired();
 
             money.Property(m => m.Currency)
-                .HasColumnName("currency")
+                .HasColumnName("allocated_currency")
                 .HasMaxLength(3)
                 .IsRequired();
         });
+
+        builder.OwnsOne(bc => bc.SpentAmount, money =>
+        {
+            money.Property(m => m.Amount)
+                .HasColumnName("spent_amount")
+                .HasColumnType("decimal(18,2)")
+                .IsRequired();
+
+            money.Property(m => m.Currency)
+                .HasColumnName("spent_currency")
+                .HasMaxLength(3)
+                .IsRequired();
+        });
+
+        builder.Property(bc => bc.AlertThreshold)
+            .HasColumnName("alert_threshold")
+            .HasColumnType("decimal(5,4)")
+            .IsRequired();
 
         builder.Property(bc => bc.CreatedAt)
             .HasColumnName("created_at")
@@ -48,7 +66,7 @@ public class BudgetCategoryConfiguration : IEntityTypeConfiguration<BudgetCatego
 
         // Configure relationships
         builder.HasOne(bc => bc.Budget)
-            .WithMany(b => b.Categories)
+            .WithMany(b => b.BudgetCategories)
             .HasForeignKey(bc => bc.BudgetId)
             .OnDelete(DeleteBehavior.Cascade);
 

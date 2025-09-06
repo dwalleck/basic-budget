@@ -55,10 +55,7 @@ public class GetTransactionsQueryHandler : IRequestHandler<GetTransactionsQuery,
                 var account = await _accountRepository.GetByIdAsync(request.AccountId.Value, cancellationToken);
                 if (account == null)
                 {
-                    return DomainError.NotFound(
-                        "ACCOUNT_NOT_FOUND",
-                        $"Account with ID '{request.AccountId}' was not found"
-                    );
+                    return new AccountNotFoundError(request.AccountId.Value);
                 }
             }
 
@@ -68,40 +65,25 @@ public class GetTransactionsQueryHandler : IRequestHandler<GetTransactionsQuery,
                 var category = await _categoryRepository.GetByIdAsync(request.CategoryId.Value, cancellationToken);
                 if (category == null)
                 {
-                    return DomainError.NotFound(
-                        "CATEGORY_NOT_FOUND",
-                        $"Category with ID '{request.CategoryId}' was not found"
-                    );
+                    return new CategoryNotFoundError(request.CategoryId.Value);
                 }
             }
 
             // Validate pagination parameters
             if (request.PageSize <= 0 || request.PageSize > 100)
             {
-                return DomainError.Validation(
-                    "INVALID_PAGE_SIZE",
-                    "Page size must be between 1 and 100",
-                    nameof(request.PageSize)
-                );
+                return new ValidationError("Page size must be between 1 and 100", "INVALID_PAGE_SIZE");
             }
 
             if (request.PageNumber <= 0)
             {
-                return DomainError.Validation(
-                    "INVALID_PAGE_NUMBER",
-                    "Page number must be greater than 0",
-                    nameof(request.PageNumber)
-                );
+                return new ValidationError("Page number must be greater than 0", "INVALID_PAGE_NUMBER");
             }
 
             // Validate date range
             if (request.StartDate.HasValue && request.EndDate.HasValue && request.StartDate > request.EndDate)
             {
-                return DomainError.Validation(
-                    "INVALID_DATE_RANGE",
-                    "Start date must be before or equal to end date",
-                    nameof(request.StartDate)
-                );
+                return new ValidationError("Start date must be before or equal to end date", "INVALID_DATE_RANGE");
             }
 
             // Build filter criteria
@@ -133,7 +115,7 @@ public class GetTransactionsQueryHandler : IRequestHandler<GetTransactionsQuery,
             var hasPreviousPage = request.PageNumber > 1;
 
             var result = new TransactionPagedResult(
-                transactions,
+                transactions.ToList().AsReadOnly(),
                 totalCount,
                 request.PageNumber,
                 request.PageSize,
@@ -145,11 +127,8 @@ public class GetTransactionsQueryHandler : IRequestHandler<GetTransactionsQuery,
         }
         catch (Exception ex)
         {
-            return DomainError.Infrastructure(
-                "TRANSACTIONS_QUERY_FAILED",
-                "Failed to retrieve transactions from database",
-                ex
-            );
+            // Infrastructure exceptions should bubble up, not be converted to domain errors
+            throw;
         }
     }
 }

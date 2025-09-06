@@ -25,11 +25,6 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
             .HasColumnName("description")
             .HasMaxLength(500);
 
-        builder.Property(c => c.CategoryType)
-            .HasColumnName("category_type")
-            .HasConversion<string>()
-            .HasMaxLength(20)
-            .IsRequired();
 
         builder.Property(c => c.Color)
             .HasColumnName("color")
@@ -48,7 +43,7 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
 
         // Configure self-referencing relationship for category hierarchy
         builder.HasOne(c => c.ParentCategory)
-            .WithMany(c => c.SubCategories)
+            .WithMany(c => c.Children)
             .HasForeignKey(c => c.ParentCategoryId)
             .OnDelete(DeleteBehavior.Restrict);
 
@@ -56,8 +51,6 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
         builder.HasIndex(c => c.ParentCategoryId)
             .HasDatabaseName("IX_Category_Parent");
 
-        builder.HasIndex(c => c.CategoryType)
-            .HasDatabaseName("IX_Category_Type");
 
         builder.HasIndex(c => c.Name)
             .HasDatabaseName("IX_Category_Name");

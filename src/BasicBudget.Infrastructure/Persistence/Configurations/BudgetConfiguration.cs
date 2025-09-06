@@ -48,7 +48,7 @@ public class BudgetConfiguration : IEntityTypeConfiguration<Budget>
             .IsRequired();
 
         // Configure relationships
-        builder.HasMany(b => b.Categories)
+        builder.HasMany(b => b.BudgetCategories)
             .WithOne(bc => bc.Budget)
             .HasForeignKey(bc => bc.BudgetId)
             .OnDelete(DeleteBehavior.Cascade);

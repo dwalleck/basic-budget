@@ -58,7 +58,6 @@ public class BasicBudgetDbContext : DbContext
         optionsBuilder.EnableDetailedErrors();
 
         // Configure command timeout
-        optionsBuilder.CommandTimeout(30);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

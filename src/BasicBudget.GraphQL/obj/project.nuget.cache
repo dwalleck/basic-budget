@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "kPs+rjJqg9Q=",
+  "dgSpecHash": "7f/01dcTZhc=",
   "success": true,
   "projectFilePath": "/home/dwalleck/repos/basic-budget/src/BasicBudget.GraphQL/BasicBudget.GraphQL.csproj",
   "expectedPackageFiles": [
@@ -15,6 +15,7 @@
     "/home/dwalleck/.nuget/packages/hotchocolate.aspnetcore/15.1.10/hotchocolate.aspnetcore.15.1.10.nupkg.sha512",
     "/home/dwalleck/.nuget/packages/hotchocolate.authorization/15.1.10/hotchocolate.authorization.15.1.10.nupkg.sha512",
     "/home/dwalleck/.nuget/packages/hotchocolate.costanalysis/15.1.10/hotchocolate.costanalysis.15.1.10.nupkg.sha512",
+    "/home/dwalleck/.nuget/packages/hotchocolate.data/15.1.10/hotchocolate.data.15.1.10.nupkg.sha512",
     "/home/dwalleck/.nuget/packages/hotchocolate.execution/15.1.10/hotchocolate.execution.15.1.10.nupkg.sha512",
     "/home/dwalleck/.nuget/packages/hotchocolate.execution.abstractions/15.1.10/hotchocolate.execution.abstractions.15.1.10.nupkg.sha512",
     "/home/dwalleck/.nuget/packages/hotchocolate.execution.projections/15.1.10/hotchocolate.execution.projections.15.1.10.nupkg.sha512",

@@ -20,7 +20,10 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
         builder.Property(a => a.AccountNumber)
             .HasColumnName("account_number")
             .HasMaxLength(50)
-            .IsRequired();
+            .IsRequired()
+            .HasConversion(
+                v => v.Value,
+                v => AccountNumber.Create(v).AsT0); // Assumes valid data from DB
 
         builder.Property(a => a.Name)
             .HasColumnName("name")

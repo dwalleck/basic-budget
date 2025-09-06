@@ -49,21 +49,14 @@ public class CreateTransactionCommandHandler : IRequestHandler<CreateTransaction
             category = await _categoryRepository.GetByIdAsync(request.CategoryId.Value, cancellationToken);
             if (category == null)
             {
-                return DomainError.NotFound(
-                    "CATEGORY_NOT_FOUND",
-                    $"Category with ID '{request.CategoryId}' was not found"
-                );
+                return new CategoryNotFoundError(request.CategoryId.Value);
             }
         }
 
         // Validate transaction date is not in future
         if (request.TransactionDate > DateTime.UtcNow)
         {
-            return DomainError.Validation(
-                "FUTURE_TRANSACTION_DATE",
-                "Transaction date cannot be in the future",
-                nameof(request.TransactionDate)
-            );
+            return new FutureTransactionDateError(request.TransactionDate);
         }
 
         // Create the transaction using domain entity factory method
@@ -72,7 +65,7 @@ public class CreateTransactionCommandHandler : IRequestHandler<CreateTransaction
             request.Amount,
             request.Description,
             request.TransactionDate,
-            category
+            request.CategoryId
         );
 
         // If transaction creation failed due to domain rules, return error
@@ -83,12 +76,8 @@ public class CreateTransactionCommandHandler : IRequestHandler<CreateTransaction
 
         var transaction = transactionResult.AsT0;
 
-        // Update account balance
-        var balanceUpdateResult = account.UpdateBalance(request.Amount);
-        if (balanceUpdateResult.IsT1)
-        {
-            return balanceUpdateResult.AsT1;
-        }
+        // Add transaction to account for balance recalculation
+        account.AddTransaction(transaction);
 
         // Persist the transaction and updated account
         try
@@ -101,9 +90,9 @@ public class CreateTransactionCommandHandler : IRequestHandler<CreateTransaction
         }
         catch (Exception ex)
         {
-            return DomainError.Infrastructure(
-                "TRANSACTION_SAVE_FAILED",
+            return new InfrastructureError(
                 "Failed to save transaction to database",
+                "TRANSACTION_SAVE_FAILED",
                 ex
             );
         }

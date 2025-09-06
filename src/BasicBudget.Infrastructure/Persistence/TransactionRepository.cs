@@ -40,7 +40,7 @@ public class TransactionRepository : ITransactionRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyList<Transaction>> GetByAccountIdAsync(Guid accountId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Transaction>> GetByAccountAsync(Guid accountId, CancellationToken cancellationToken = default)
     {
         _logger.LogDebug("Retrieving transactions for account: {AccountId}", accountId);
         
@@ -52,7 +52,7 @@ public class TransactionRepository : ITransactionRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyList<Transaction>> GetByCategoryIdAsync(Guid categoryId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Transaction>> GetByCategoryAsync(Guid categoryId, CancellationToken cancellationToken = default)
     {
         _logger.LogDebug("Retrieving transactions for category: {CategoryId}", categoryId);
         
@@ -64,9 +64,62 @@ public class TransactionRepository : ITransactionRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<(IReadOnlyList<Transaction> transactions, int totalCount)> GetPagedAsync(
-        TransactionFilterCriteria filterCriteria,
-        TransactionSortCriteria sortCriteria,
+    public async Task<IEnumerable<Transaction>> GetByAccountAndDateRangeAsync(
+        Guid accountId, 
+        DateTime startDate, 
+        DateTime endDate, 
+        CancellationToken cancellationToken = default)
+    {
+        _logger.LogDebug("Retrieving transactions for account {AccountId} from {StartDate} to {EndDate}", 
+            accountId, startDate, endDate);
+
+        return await _context.Transactions
+            .Include(t => t.Account)
+            .Include(t => t.Category)
+            .Where(t => t.AccountId == accountId && t.TransactionDate >= startDate && t.TransactionDate <= endDate)
+            .OrderByDescending(t => t.TransactionDate)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<Transaction>> GetUncategorizedAsync(CancellationToken cancellationToken = default)
+    {
+        _logger.LogDebug("Retrieving uncategorized transactions");
+        
+        return await _context.Transactions
+            .Include(t => t.Account)
+            .Include(t => t.Category)
+            .Where(t => t.CategoryId == null)
+            .OrderByDescending(t => t.TransactionDate)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<Transaction>> GetUnreconciledAsync(Guid accountId, CancellationToken cancellationToken = default)
+    {
+        _logger.LogDebug("Retrieving unreconciled transactions for account: {AccountId}", accountId);
+        
+        return await _context.Transactions
+            .Include(t => t.Account)
+            .Include(t => t.Category)
+            .Where(t => t.AccountId == accountId && !t.IsReconciled)
+            .OrderByDescending(t => t.TransactionDate)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<Transaction>> GetByDescriptionAsync(string descriptionPattern, CancellationToken cancellationToken = default)
+    {
+        _logger.LogDebug("Retrieving transactions matching description pattern: {Pattern}", descriptionPattern);
+        
+        return await _context.Transactions
+            .Include(t => t.Account)
+            .Include(t => t.Category)
+            .Where(t => t.Description.Contains(descriptionPattern))
+            .OrderByDescending(t => t.TransactionDate)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<(IEnumerable<Transaction> transactions, int totalCount)> GetPagedAsync(
+        TransactionFilterCriteria filter,
+        TransactionSortCriteria sort,
         int pageNumber,
         int pageSize,
         CancellationToken cancellationToken = default)
@@ -80,10 +133,10 @@ public class TransactionRepository : ITransactionRepository
             .AsQueryable();
 
         // Apply filters
-        query = ApplyFilters(query, filterCriteria);
+        query = ApplyFilters(query, filter);
 
         // Apply sorting
-        query = ApplySorting(query, sortCriteria);
+        query = ApplySorting(query, sort);
 
         var totalCount = await query.CountAsync(cancellationToken);
         
@@ -96,10 +149,10 @@ public class TransactionRepository : ITransactionRepository
     }
 
     public async Task<Transaction?> FindDuplicateAsync(
-        Guid accountId, 
-        Money amount, 
-        string description, 
-        DateTime transactionDate, 
+        Guid accountId,
+        Money amount,
+        DateTime transactionDate,
+        string description,
         CancellationToken cancellationToken = default)
     {
         _logger.LogDebug("Checking for duplicate transaction - Account: {AccountId}, Amount: {Amount}, Date: {Date}", 
@@ -151,29 +204,31 @@ public class TransactionRepository : ITransactionRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task AddAsync(Transaction transaction, CancellationToken cancellationToken = default)
+    public async Task<Transaction> AddAsync(Transaction transaction, CancellationToken cancellationToken = default)
     {
         _logger.LogDebug("Adding new transaction: {Description} - {Amount}", 
             transaction.Description, transaction.Amount.Formatted);
         
         await _context.Transactions.AddAsync(transaction, cancellationToken);
+        return transaction;
     }
 
-    public async Task AddRangeAsync(IEnumerable<Transaction> transactions, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Transaction>> AddRangeAsync(IEnumerable<Transaction> transactions, CancellationToken cancellationToken = default)
     {
         var transactionList = transactions.ToList();
         _logger.LogDebug("Adding {Count} new transactions", transactionList.Count);
         
         await _context.Transactions.AddRangeAsync(transactionList, cancellationToken);
+        return transactionList;
     }
 
-    public Task UpdateAsync(Transaction transaction, CancellationToken cancellationToken = default)
+    public Task<Transaction> UpdateAsync(Transaction transaction, CancellationToken cancellationToken = default)
     {
         _logger.LogDebug("Updating transaction: {Description} - {Amount}", 
             transaction.Description, transaction.Amount.Formatted);
         
         _context.Transactions.Update(transaction);
-        return Task.CompletedTask;
+        return Task.FromResult(transaction);
     }
 
     public Task DeleteAsync(Transaction transaction, CancellationToken cancellationToken = default)
@@ -270,19 +325,3 @@ public class TransactionRepository : ITransactionRepository
     }
 }
 
-// Filter criteria class used by the repository
-public record TransactionFilterCriteria(
-    Guid? AccountId = null,
-    Guid? CategoryId = null,
-    DateTime? StartDate = null,
-    DateTime? EndDate = null,
-    decimal? MinAmount = null,
-    decimal? MaxAmount = null,
-    string? DescriptionContains = null
-);
-
-// Sort criteria class used by the repository
-public record TransactionSortCriteria(
-    string SortBy = "TransactionDate",
-    bool SortDescending = true
-);

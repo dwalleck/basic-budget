@@ -104,5 +104,13 @@ public record InsufficientPermissionsError(string Operation)
 public record ConcurrencyConflictError(string EntityType, Guid EntityId) 
     : DomainError($"Concurrency conflict detected for {EntityType} with ID {EntityId}", "CONCURRENCY_CONFLICT");
 
+// Generic validation error
+public record ValidationError(string Message, string Code) 
+    : DomainError(Message, Code);
+
+// Infrastructure-related errors
+public record InfrastructureError(string Message, string Code, Exception? InnerException = null) 
+    : DomainError(Message, Code);
+
 // Simple success record for void operations
 public record Success;

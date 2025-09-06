@@ -1,19 +1,20 @@
+using System.ComponentModel;
 using TUnit.Core;
 using TUnit.Assertions;
 using Aspire.Hosting.Testing;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net.Http.Json;
+using Aspire.Hosting;
 
 namespace BasicBudget.GraphQL.Tests;
 
-[TestClass]
-[Category("Contract")]
+[TUnit.Core.Category("Contract")]
 public class MutationTests
 {
     private DistributedApplication? _app;
     private HttpClient? _httpClient;
 
-    [Before(TestState.BeforeTest)]
+    [Before(HookType.Test)]
     public async Task SetupAsync()
     {
         var appBuilder = DistributedApplication.CreateBuilder();
@@ -28,7 +29,7 @@ public class MutationTests
         _httpClient.BaseAddress = httpEndpoint;
     }
 
-    [After(TestState.AfterTest)]
+    [After(HookType.Test)]
     public async Task CleanupAsync()
     {
         _httpClient?.Dispose();
