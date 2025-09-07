@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BasicBudget Story Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .next-story {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        .next-story h2 {
+            color: white;
+            font-size: 1.8em;
+        }
+        .story-item {
+            background: #f7f7f7;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .story-item:hover {
+            background: #e0e0e0;
+            transform: translateX(5px);
+        }
+        .story-id {
+            font-weight: bold;
+            color: #667eea;
+        }
+        .story-title {
+            color: #555;
+            margin-left: 10px;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .stat {
+            text-align: center;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            flex: 1;
+            min-width: 100px;
+        }
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .command {
+            background: #2d3748;
+            color: #48bb78;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            position: relative;
+        }
+        .copy-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #48bb78;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .copy-btn:hover {
+            background: #38a169;
+        }
+        .dependency-graph {
+            background: #f7f7f7;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        .priority-high {
+            border-left: 5px solid #f56565;
+        }
+        .priority-medium {
+            border-left: 5px solid #ed8936;
+        }
+        .priority-low {
+            border-left: 5px solid #48bb78;
+        }
+        .phase-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .phase-1 { background: #f56565; color: white; }
+        .phase-2 { background: #ed8936; color: white; }
+        .phase-3 { background: #4299e1; color: white; }
+        .phase-4 { background: #48bb78; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 BasicBudget Story Dashboard</h1>
+        
+        <div class="dashboard">
+            <!-- Next Story Card -->
+            <div class="card next-story">
+                <h2>🎯 Work on This Next</h2>
+                <div style="font-size: 1.2em; margin: 15px 0;">
+                    <div class="story-id">FOUND-001</div>
+                    <div style="margin-top: 10px;">Configure GraphQL Scalar Types</div>
+                    <div style="margin-top: 10px; font-size: 0.9em; opacity: 0.9;">
+                        ⚠️ Critical: Blocks all other stories
+                    </div>
+                </div>
+                <div class="command">
+                    git checkout -b story/FOUND-001-configure-scalars
+                    <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                </div>
+                <div style="margin-top: 15px;">
+                    📁 Location: <code>/stories/types/FOUND-001-configure-scalars.md</code>
+                </div>
+                <div style="margin-top: 10px;">
+                    ⏱️ Estimated Time: 2 hours
+                </div>
+            </div>
+
+            <!-- Progress Overview -->
+            <div class="card">
+                <h2>📊 Progress Overview</h2>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 2%;">1 / 45</div>
+                </div>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value">45</div>
+                        <div class="stat-label">Total</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">1</div>
+                        <div class="stat-label">Complete</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">0</div>
+                        <div class="stat-label">In Progress</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">44</div>
+                        <div class="stat-label">Remaining</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Sprint -->
+            <div class="card">
+                <h2>📅 Current Sprint (Week 1)</h2>
+                <h3 style="margin-top: 15px; color: #666;">Foundation (Days 1-2)</h3>
+                <div class="story-item priority-high">
+                    <span class="story-id">FOUND-001</span>
+                    <span class="story-title">Configure Scalars</span>
+                    <span class="phase-badge phase-1">Phase 1</span>
+                </div>
+                <div class="story-item priority-high">
+                    <span class="story-id">FOUND-002</span>
+                    <span class="story-title">Error Handling</span>
+                    <span class="phase-badge phase-1">Phase 1</span>
+                </div>
+                <div class="story-item priority-high">
+                    <span class="story-id">FOUND-003</span>
+                    <span class="story-title">MediatR Pipeline</span>
+                    <span class="phase-badge phase-1">Phase 1</span>
+                </div>
+                
+                <h3 style="margin-top: 15px; color: #666;">Basic CRUD (Days 3-5)</h3>
+                <div class="story-item priority-medium">
+                    <span class="story-id">QUERY-001</span>
+                    <span class="story-title">List Accounts</span>
+                    <span class="phase-badge phase-2">Phase 2</span>
+                </div>
+                <div class="story-item priority-medium">
+                    <span class="story-id">MUT-002</span>
+                    <span class="story-title">Update Account</span>
+                    <span class="phase-badge phase-2">Phase 2</span>
+                </div>
+            </div>
+
+            <!-- Dependency Chain -->
+            <div class="card">
+                <h2>🔗 Dependency Chain</h2>
+                <div class="dependency-graph">FOUND-001 (Configure Scalars)
+    ↓ unlocks
+FOUND-002 (Error Handling)
+    ↓ unlocks
+FOUND-003 (MediatR)
+    ↓ unlocks
+TYPE-004, TYPE-005
+    ↓ unlocks
+All CRUD Operations</div>
+            </div>
+
+            <!-- Ready Queue -->
+            <div class="card">
+                <h2>✅ Ready to Start</h2>
+                <div class="story-item" onclick="showStory('FOUND-001')">
+                    <span class="story-id">FOUND-001</span>
+                    <span class="story-title">Configure Scalars</span>
+                </div>
+                <p style="margin-top: 15px; color: #999; font-style: italic;">
+                    Other stories blocked until foundations complete
+                </p>
+            </div>
+
+            <!-- Blocked Stories -->
+            <div class="card">
+                <h2>⏸️ Blocked Count</h2>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" style="color: #f56565;">44</div>
+                        <div class="stat-label">Blocked by FOUND-001</div>
+                    </div>
+                </div>
+                <p style="margin-top: 15px; color: #666;">
+                    Complete foundation stories to unlock the rest
+                </p>
+            </div>
+
+            <!-- Quick Commands -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <h2>💻 Quick Commands</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 15px;">
+                    <div>
+                        <h3 style="color: #666; margin-bottom: 10px;">Check Status</h3>
+                        <div class="command">
+                            ./stories/check-next.sh
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="color: #666; margin-bottom: 10px;">View Story</h3>
+                        <div class="command">
+                            cat stories/types/FOUND-001-configure-scalars.md
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="color: #666; margin-bottom: 10px;">Build & Test</h3>
+                        <div class="command">
+                            dotnet build && dotnet test
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="color: #666; margin-bottom: 10px;">Create PR</h3>
+                        <div class="command">
+                            gh pr create --title "FOUND-001 - Configure Scalars"
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; color: white; margin-top: 30px; opacity: 0.8;">
+            Last Updated: 2025-01-06 | 
+            <a href="file:///home/dwalleck/repos/basic-budget/stories/INDEX.md" style="color: white;">View Index</a> | 
+            <a href="file:///home/dwalleck/repos/basic-budget/stories/CURRENT_STATUS.md" style="color: white;">View Status</a>
+        </div>
+    </div>
+
+    <script>
+        function copyCommand(button) {
+            const command = button.parentElement.textContent.replace('Copy', '').trim();
+            navigator.clipboard.writeText(command).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.background = '#38a169';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#48bb78';
+                }, 2000);
+            });
+        }
+
+        function showStory(storyId) {
+            alert(`Story ${storyId} details:\n\nRun this command to view:\ncat stories/*/${storyId}*.md`);
+        }
+
+        // Auto-refresh every 30 seconds (optional)
+        // setInterval(() => location.reload(), 30000);
+    </script>
+</body>
+</html>
