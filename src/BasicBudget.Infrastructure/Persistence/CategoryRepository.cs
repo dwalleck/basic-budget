@@ -14,7 +14,7 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task<Category?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Categories.FindAsync(new object[] { id }, cancellationToken);
+        return await _context.Categories.FindAsync([id], cancellationToken);
     }
 
     public async Task<Category?> GetByNameAsync(string name, Guid? parentCategoryId = null, CancellationToken cancellationToken = default)
