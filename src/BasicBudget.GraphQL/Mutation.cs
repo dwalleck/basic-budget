@@ -20,25 +20,25 @@ public class Mutation
         CancellationToken cancellationToken)
     {
         var moneyResult = Money.Create(input.InitialBalance.Amount, input.InitialBalance.Currency);
-        if (moneyResult.IsT1)
-        {
-            // Handle money creation error
-            var error = new ApiError(moneyResult.AsT1.Message, "INVALID_MONEY_INPUT");
-            return new CreateAccountPayload(null, new[] { error });
-        }
 
-        var command = new CreateAccountCommand(
-            input.AccountNumber,
-            input.Name,
-            input.AccountType,
-            moneyResult.AsT0
-        );
+        return await moneyResult.Match(
+            async money =>
+            {
+                var command = new CreateAccountCommand(
+                    input.AccountNumber,
+                    input.Name,
+                    input.AccountType,
+                    money
+                );
 
-        var result = await mediator.Send(command, cancellationToken);
+                var result = await mediator.Send(command, cancellationToken);
 
-        return result.Match(
-            account => new CreateAccountPayload(account, null),
-            error => new CreateAccountPayload(null, new[] { new ApiError(error.Message, error.Code) })
+                return result.Match(
+                    account => new CreateAccountPayload(account, null),
+                    error => new CreateAccountPayload(null, [new ApiError(error.Message, error.Code)])
+                );
+            },
+            error => Task.FromResult(new CreateAccountPayload(null, [new ApiError(error.Message, "INVALID_MONEY_INPUT")]))
         );
     }
 }

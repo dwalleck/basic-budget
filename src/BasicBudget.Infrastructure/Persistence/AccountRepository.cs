@@ -15,7 +15,7 @@ public class AccountRepository : IAccountRepository
 
     public async Task<Account?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Accounts.FindAsync(new object[] { id }, cancellationToken);
+        return await _context.Accounts.FindAsync([id], cancellationToken);
     }
 
     public async Task<Account?> GetByAccountNumberAsync(AccountNumber accountNumber, CancellationToken cancellationToken = default)

@@ -14,7 +14,7 @@ public class BudgetRepository : IBudgetRepository
 
     public async Task<Budget?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Budgets.FindAsync(new object[] { id }, cancellationToken);
+        return await _context.Budgets.FindAsync([id], cancellationToken);
     }
 
     public async Task<Budget?> GetByNameAsync(string name, CancellationToken cancellationToken = default)

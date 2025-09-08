@@ -210,14 +210,14 @@ namespace BasicBudget.Infrastructure.Migrations
                 name: "IX_BudgetCategory_Budget_Category_Unique",
                 schema: "public",
                 table: "budget_categories",
-                columns: new[] { "budget_id", "category_id" },
+                columns: ["budget_id", "category_id"],
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Budget_DateRange",
                 schema: "public",
                 table: "budgets",
-                columns: new[] { "start_date", "end_date" });
+                columns: ["start_date", "end_date"]);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Budget_IsActive",
@@ -241,13 +241,13 @@ namespace BasicBudget.Infrastructure.Migrations
                 name: "IX_Transaction_Account_Date",
                 schema: "public",
                 table: "transactions",
-                columns: new[] { "account_id", "transaction_date" });
+                columns: ["account_id", "transaction_date"]);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transaction_Category_Date",
                 schema: "public",
                 table: "transactions",
-                columns: new[] { "category_id", "transaction_date" });
+                columns: ["category_id", "transaction_date"]);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transaction_TransactionDate",

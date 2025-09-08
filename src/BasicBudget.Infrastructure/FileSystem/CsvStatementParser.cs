@@ -62,7 +62,7 @@ public class CsvStatementParser : IStatementParser
         _logger.LogDebug("Parsing CSV statement content");
 
         var transactions = new List<ParsedTransactionData>();
-        var lines = csvContent.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        var lines = csvContent.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
 
         if (lines.Length == 0)
         {
