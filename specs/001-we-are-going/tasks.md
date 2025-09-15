@@ -4,6 +4,7 @@
 **Prerequisites**: plan.md (✓), research.md (✓), data-model.md (✓), contracts/ (✓), quickstart.md (✓)
 
 ## Execution Flow (main)
+
 ```
 1. Load plan.md from feature directory
    → ✓ Found: .NET 10, HotChocolate GraphQL, Hexagonal Architecture, MediatR, EF Core, PostgreSQL
@@ -27,19 +28,22 @@
 7. Create parallel execution examples
 8. Validate task completeness:
    → All contracts have tests? ✓
-   → All entities have models? ✓  
+   → All entities have models? ✓
    → All endpoints implemented? ✓
 9. Return: SUCCESS (46 tasks ready for execution)
 ```
 
 ## Format: `[ID] [P?] Description`
+
 - **[P]**: Can run in parallel (different files, no dependencies)
 - Include exact file paths in descriptions
 
 ## Path Conventions
+
 Based on plan.md hexagonal architecture structure:
+
 - **Domain**: `src/BasicBudget.Domain/`
-- **Application**: `src/BasicBudget.Application/`  
+- **Application**: `src/BasicBudget.Application/`
 - **Infrastructure**: `src/BasicBudget.Infrastructure/`
 - **GraphQL**: `src/BasicBudget.GraphQL/`
 - **AppHost**: `src/BasicBudget.AppHost/`
@@ -59,9 +63,10 @@ Based on plan.md hexagonal architecture structure:
 ## Phase 3.2: Tests First (TDD) ⚠️ MUST COMPLETE BEFORE 3.3
 
 ### Contract Tests (GraphQL Schema Validation)
+
 - [x] **T009** [P] Create TUnit test project `tests/BasicBudget.GraphQL.Tests/` with Aspire.Hosting.Testing and TUnit v0.57.24+ packages
 - [x] **T010** [P] Create GraphQL contract test for Query.accounts operation in `tests/BasicBudget.GraphQL.Tests/QueryTests.cs` - MUST FAIL initially
-- [x] **T011** [P] Create GraphQL contract test for Query.account(id) operation in `tests/BasicBudget.GraphQL.Tests/QueryTests.cs` - MUST FAIL initially  
+- [x] **T011** [P] Create GraphQL contract test for Query.account(id) operation in `tests/BasicBudget.GraphQL.Tests/QueryTests.cs` - MUST FAIL initially
 - [x] **T012** [P] Create GraphQL contract test for Query.transactions with filtering in `tests/BasicBudget.GraphQL.Tests/QueryTests.cs` - MUST FAIL initially
 - [x] **T013** [P] Create GraphQL contract test for Query.budgets operation in `tests/BasicBudget.GraphQL.Tests/QueryTests.cs` - MUST FAIL initially
 - [x] **T014** [P] Create GraphQL contract test for Mutation.createAccount in `tests/BasicBudget.GraphQL.Tests/MutationTests.cs` - MUST FAIL initially
@@ -72,6 +77,7 @@ Based on plan.md hexagonal architecture structure:
 - [x] **T019** [P] Create GraphQL contract test for Subscription.budgetAlertAdded in `tests/BasicBudget.GraphQL.Tests/SubscriptionTests.cs` - MUST FAIL initially
 
 ### Integration Tests (Quickstart Scenarios)
+
 - [x] **T020** [P] Create TUnit integration test project `tests/BasicBudget.IntegrationTests/` with Aspire TestHost, Respawn v6.2.1+, and ParallelLimiter setup
 - [x] **T021** [P] Create integration test for Scenario 1 (Create First Account) in `tests/BasicBudget.IntegrationTests/AccountScenarioTests.cs` - MUST FAIL initially
 - [x] **T022** [P] Create integration test for Scenario 2 (Add Manual Transaction) in `tests/BasicBudget.IntegrationTests/TransactionScenarioTests.cs` - MUST FAIL initially
@@ -81,7 +87,7 @@ Based on plan.md hexagonal architecture structure:
 ## Phase 3.3: Domain Layer Implementation
 
 - [x] **T025** [P] Create Money value object in `src/BasicBudget.Domain/ValueObjects/Money.cs` with validation and OneOf error handling per data-model.md lines 156-164
-- [x] **T026** [P] Create AccountNumber value object in `src/BasicBudget.Domain/ValueObjects/AccountNumber.cs` with masking and validation per data-model.md lines 165-175  
+- [x] **T026** [P] Create AccountNumber value object in `src/BasicBudget.Domain/ValueObjects/AccountNumber.cs` with masking and validation per data-model.md lines 165-175
 - [x] **T027** [P] Create Account entity in `src/BasicBudget.Domain/Entities/Account.cs` with business rules per data-model.md lines 6-24
 - [x] **T028** [P] Create Transaction entity in `src/BasicBudget.Domain/Entities/Transaction.cs` with business rules per data-model.md lines 26-46
 - [x] **T029** [P] Create Budget entity in `src/BasicBudget.Domain/Entities/Budget.cs` with business rules per data-model.md lines 48-67
@@ -91,7 +97,7 @@ Based on plan.md hexagonal architecture structure:
 - [x] **T033** [P] Create repository interfaces in `src/BasicBudget.Domain/Repositories/` for Account, Transaction, Budget, Category per data-model.md lines 194-235
 - [x] **T034** [P] Create BudgetCalculationService in `src/BasicBudget.Domain/Services/BudgetCalculationService.cs` per data-model.md lines 178-184
 
-## Phase 3.4: Application Layer Implementation  
+## Phase 3.4: Application Layer Implementation
 
 - [x] **T035** Create CreateAccountCommand and handler in `src/BasicBudget.Application/Commands/CreateAccountCommand.cs` returning OneOf<Account, DomainError>
 - [x] **T036** Create CreateTransactionCommand and handler in `src/BasicBudget.Application/Commands/CreateTransactionCommand.cs` with validation
@@ -145,31 +151,36 @@ Setup (T001-T008) → Tests (T009-T024) → Domain (T025-T034) → Application (
 ## Parallel Execution Examples
 
 **Phase 3.1 Setup - All parallel**:
+
 ```bash
 # Can run simultaneously (different projects)
 Task T002, T003, T004, T005, T006, T007, T008
 ```
 
 **Phase 3.2 Contract Tests - All parallel**:
+
 ```bash
-# Can run simultaneously (different test files) 
+# Can run simultaneously (different test files)
 Task T009, T010, T011, T012, T013, T014, T015, T016, T017, T018, T019, T020, T021, T022, T023, T024
 ```
 
 **Phase 3.3 Domain - All parallel**:
+
 ```bash
 # Can run simultaneously (different entity files)
 Task T025, T026, T027, T028, T029, T030, T031, T032, T033, T034
 ```
 
 **Phase 3.8 Polish - All parallel**:
-```bash  
+
+```bash
 # Can run simultaneously (different areas)
 Task T054, T055, T056, T057, T058
 ```
 
 ## Task Validation
-✅ All GraphQL operations have contract tests (T010-T019)  
+
+✅ All GraphQL operations have contract tests (T010-T019)
 ✅ All entities have implementation tasks (T025-T034)
 ✅ All quickstart scenarios have integration tests (T021-T024)
 ✅ Constitutional TDD requirement: Tests before implementation

@@ -3,33 +3,43 @@
 ## 🚀 Start Using in 5 Minutes
 
 ### 1. Check What to Work on Next
+
 ```bash
 ./stories/check-next.sh
 ```
+
 This immediately tells you the next story to implement.
 
 ### 2. View the Story
+
 ```bash
 cat stories/types/FOUND-001-configure-scalars.md
 ```
+
 Everything you need is in the story file.
 
 ### 3. Start Working
+
 ```bash
 git checkout -b story/FOUND-001-configure-scalars
 ```
+
 Follow the implementation steps in the story.
 
 ### 4. Track Progress
+
 Edit the story file and check boxes as you complete:
+
 - [x] In Progress ← Check this when starting
 - [x] Code Complete ← Check when implementation done
 - [x] PR Opened ← Check after creating PR
 
 ### 5. Find Next Story
+
 ```bash
 ./stories/check-next.sh
 ```
+
 The system automatically shows the next unblocked story.
 
 ---
@@ -37,6 +47,7 @@ The system automatically shows the next unblocked story.
 ## 📁 What's in Each Story?
 
 Every story contains:
+
 - **Overview**: What you're building
 - **Acceptance Criteria**: Definition of done
 - **Technical Context**: Architecture requirements
@@ -49,17 +60,20 @@ Every story contains:
 ## 📊 Track Overall Progress
 
 ### Option 1: Command Line
+
 ```bash
 cat stories/CURRENT_STATUS.md
 ```
 
 ### Option 2: Visual Dashboard
+
 ```bash
 open stories/dashboard.html  # Mac
 xdg-open stories/dashboard.html  # Linux
 ```
 
 ### Option 3: Master Index
+
 ```bash
 cat stories/INDEX.md
 ```
@@ -105,16 +119,19 @@ gh pr create --title "FOUND-001 - Configure Scalars"
 ## 🎯 Key Concepts
 
 ### Dependencies Drive Order
+
 - System knows what's blocked
 - Always shows only unblocked work
 - Completing stories unlocks new ones
 
 ### Everything is Self-Contained
+
 - No searching for requirements
 - No missing context
 - No guessing implementation details
 
 ### Atomic Units
+
 - Each story = one PR
 - Small enough to complete in 1-2 days
 - Clear definition of done
@@ -158,23 +175,26 @@ STORY-ID format: [CATEGORY]-[NUMBER]
 ## 🆘 Troubleshooting
 
 **Q: How do I know what's blocking a story?**
+
 ```bash
 grep "Blocked By" stories/types/TYPE-001-*.md
 ```
 
 **Q: How do I find all ready stories?**
+
 ```bash
 grep -l "Not Started" stories/**/*.md | xargs grep -L "Blocked By.*\["
 ```
 
 **Q: How do I see what a story unlocks?**
+
 ```bash
 grep -l "Blocked By.*FOUND-001" stories/**/*.md
 ```
 
 ---
 
-## 🎉 That's It!
+## 🎉 That's It
 
 You now know everything needed to use the story tracking system. The key command to remember:
 

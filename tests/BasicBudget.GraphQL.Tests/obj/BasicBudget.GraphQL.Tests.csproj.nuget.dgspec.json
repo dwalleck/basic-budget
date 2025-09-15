@@ -1947,6 +1947,10 @@
               "target": "Package",
               "version": "[10.0.0-preview.7.25380.108, )"
             },
+            "Microsoft.Testing.Extensions.CodeCoverage": {
+              "target": "Package",
+              "version": "[17.14.2, )"
+            },
             "TUnit": {
               "target": "Package",
               "version": "[0.57.24, )"

@@ -1,16 +1,19 @@
 # Story: QUERY-001 - List All Accounts
 
 ## Status
+
 - [ ] Not Started
-- [ ] In Progress  
+- [ ] In Progress
 - [ ] Code Complete
 - [ ] PR Opened
 - [ ] Merged
 
 ## Overview
+
 Implement the GraphQL query to retrieve all accounts in the system. This is a simple list query without pagination that returns all accounts with their basic properties.
 
 ## Acceptance Criteria
+
 - [ ] Query returns all accounts from the database
 - [ ] Each account includes: id, accountNumber, name, accountType, currentBalance, createdAt, updatedAt
 - [ ] Money type properly formatted with amount, currency, and formatted string
@@ -21,6 +24,7 @@ Implement the GraphQL query to retrieve all accounts in the system. This is a si
 ## Technical Context
 
 ### Architecture Requirements
+
 - **Hexagonal Architecture**: Strictly enforce layer separation
   - Domain Layer: Account entity already exists
   - Application Layer: Create GetAccountsQuery and handler via MediatR
@@ -29,18 +33,21 @@ Implement the GraphQL query to retrieve all accounts in the system. This is a si
 - **Dependency Direction**: GraphQL → Application → Domain
 
 ### Implementation Location
+
 - **Application Query**: `src/BasicBudget.Application/Queries/GetAccountsQuery.cs`
 - **GraphQL Resolver**: `src/BasicBudget.GraphQL/Query.cs`
 - **Domain Entity**: `src/BasicBudget.Domain/Entities/Account.cs` (existing)
 - **Repository**: `src/BasicBudget.Domain/Repositories/IAccountRepository.cs` (existing)
 
 ### Related Files
+
 - Domain entity: `/src/BasicBudget.Domain/Entities/Account.cs`
 - Repository interface: `/src/BasicBudget.Domain/Repositories/IAccountRepository.cs`
 - Repository implementation: `/src/BasicBudget.Infrastructure/Persistence/AccountRepository.cs`
 - Existing single account query: `/src/BasicBudget.Application/Queries/GetAccountQuery.cs`
 
 ### Schema Reference
+
 ```graphql
 type Query {
   accounts: [Account!]!
@@ -72,12 +79,15 @@ enum AccountType {
 ## Implementation Steps
 
 ### 1. Create Feature Branch
+
 ```bash
 git checkout -b story/QUERY-001-list-all-accounts
 ```
 
 ### 2. Application Layer
+
 Create `/src/BasicBudget.Application/Queries/GetAccountsQuery.cs`:
+
 ```csharp
 using BasicBudget.Domain.Entities;
 using BasicBudget.Domain.Errors;
@@ -116,13 +126,17 @@ public class GetAccountsQueryHandler : IRequestHandler<GetAccountsQuery, OneOf<I
 ```
 
 ### 3. Update Repository Interface
+
 Add to `/src/BasicBudget.Domain/Repositories/IAccountRepository.cs`:
+
 ```csharp
 Task<IEnumerable<Account>> GetAllAsync(CancellationToken cancellationToken = default);
 ```
 
 ### 4. Implement Repository Method
+
 Add to `/src/BasicBudget.Infrastructure/Persistence/AccountRepository.cs`:
+
 ```csharp
 public async Task<IEnumerable<Account>> GetAllAsync(CancellationToken cancellationToken = default)
 {
@@ -133,7 +147,9 @@ public async Task<IEnumerable<Account>> GetAllAsync(CancellationToken cancellati
 ```
 
 ### 5. GraphQL Layer
+
 Add to `/src/BasicBudget.GraphQL/Query.cs`:
+
 ```csharp
 [GraphQLDescription("Retrieve all accounts in the system")]
 [UseProjection]
@@ -152,6 +168,7 @@ public async Task<IQueryable<Account>> GetAccountsAsync(
 ```
 
 ### 6. Verify & Test
+
 ```bash
 # Build entire solution
 dotnet build
@@ -164,6 +181,7 @@ dotnet run --project src/BasicBudget.GraphQL
 ```
 
 Test query:
+
 ```graphql
 query {
   accounts {
@@ -183,6 +201,7 @@ query {
 ```
 
 ### 7. Create Pull Request
+
 ```bash
 git add .
 git commit -m "feat: QUERY-001 - Implement list all accounts query"
@@ -191,15 +210,18 @@ gh pr create --title "QUERY-001 - List All Accounts" --body "Implements GraphQL 
 ```
 
 ## Dependencies
+
 - **Blocked By**: None (foundation query)
 - **Blocks**: Advanced account queries with filtering
 
 ## Notes
+
 - This is a foundational query that establishes the pattern for other list queries
 - Consider adding pagination in a future story if the account list grows large
 - The Money type serialization should already be configured from MUT-001
 
 ## Definition of Done
+
 - [ ] GetAccountsQuery and handler created in Application layer
 - [ ] GetAllAsync method added to IAccountRepository and implementation
 - [ ] GraphQL resolver added to Query class

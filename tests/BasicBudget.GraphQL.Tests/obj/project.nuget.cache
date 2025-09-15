@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "+GLqjNelDg8=",
+  "dgSpecHash": "7UiYerV+6vY=",
   "success": true,
   "projectFilePath": "/home/dwalleck/repos/basic-budget/tests/BasicBudget.GraphQL.Tests/BasicBudget.GraphQL.Tests.csproj",
   "expectedPackageFiles": [
@@ -71,6 +71,7 @@
     "/home/dwalleck/.nuget/packages/messagepack.annotations/2.5.192/messagepack.annotations.2.5.192.nupkg.sha512",
     "/home/dwalleck/.nuget/packages/microsoft.aspnetcore.mvc.testing/10.0.0-preview.7.25380.108/microsoft.aspnetcore.mvc.testing.10.0.0-preview.7.25380.108.nupkg.sha512",
     "/home/dwalleck/.nuget/packages/microsoft.aspnetcore.testhost/10.0.0-preview.7.25380.108/microsoft.aspnetcore.testhost.10.0.0-preview.7.25380.108.nupkg.sha512",
+    "/home/dwalleck/.nuget/packages/microsoft.diasymreader/2.0.0/microsoft.diasymreader.2.0.0.nupkg.sha512",
     "/home/dwalleck/.nuget/packages/microsoft.entityframeworkcore/10.0.0-preview.7.25380.108/microsoft.entityframeworkcore.10.0.0-preview.7.25380.108.nupkg.sha512",
     "/home/dwalleck/.nuget/packages/microsoft.entityframeworkcore.abstractions/10.0.0-preview.7.25380.108/microsoft.entityframeworkcore.abstractions.10.0.0-preview.7.25380.108.nupkg.sha512",
     "/home/dwalleck/.nuget/packages/microsoft.entityframeworkcore.relational/10.0.0-preview.7.25380.108/microsoft.entityframeworkcore.relational.10.0.0-preview.7.25380.108.nupkg.sha512",
@@ -122,6 +123,7 @@
     "/home/dwalleck/.nuget/packages/microsoft.identitymodel.logging/8.0.1/microsoft.identitymodel.logging.8.0.1.nupkg.sha512",
     "/home/dwalleck/.nuget/packages/microsoft.identitymodel.tokens/8.0.1/microsoft.identitymodel.tokens.8.0.1.nupkg.sha512",
     "/home/dwalleck/.nuget/packages/microsoft.net.stringtools/17.6.3/microsoft.net.stringtools.17.6.3.nupkg.sha512",
+    "/home/dwalleck/.nuget/packages/microsoft.testing.extensions.codecoverage/17.14.2/microsoft.testing.extensions.codecoverage.17.14.2.nupkg.sha512",
     "/home/dwalleck/.nuget/packages/microsoft.testing.extensions.trxreport.abstractions/1.8.3/microsoft.testing.extensions.trxreport.abstractions.1.8.3.nupkg.sha512",
     "/home/dwalleck/.nuget/packages/microsoft.testing.platform/1.8.3/microsoft.testing.platform.1.8.3.nupkg.sha512",
     "/home/dwalleck/.nuget/packages/microsoft.testing.platform.msbuild/1.4.3/microsoft.testing.platform.msbuild.1.4.3.nupkg.sha512",
